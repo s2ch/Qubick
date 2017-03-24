@@ -79,7 +79,7 @@ Const TimeFormatString = "HH:mm:ss GMT"
 Const CommandDone = "Команда выполнена"
 
 Const AdminRealName = "Эрик Замабувараев‐Ёмолкуу"
-Const OSVersion = "Bot version 15 written in FreeBASIC / Microsoft Windows Server 2003 R2 Standard x64 Edition Service Pack 2 Intel Xeon CPU 2.20GHz 512 RAM"
+Const OSVersion = "Bot version 20 written in FreeBASIC / Microsoft Windows Server 2003 R2 Standard x64 Edition Service Pack 2 Intel Xeon CPU 2.20GHz 512 RAM"
 
 ' Наш канал для реагирования
 Const FreeBASICruCnahhel = "##freebasic-ru"
