@@ -4,6 +4,7 @@
 #include once "bot.bi"
 #include once "ProcessMemoryInfo.bi"
 #include once "win\tlhelp32.bi"
+#include once "DateTimeToString.bi"
 
 ' Что требуется от этого бота?
 ' Сидеть на канале
@@ -201,26 +202,6 @@ Sub ProcessAdminCommand(ByVal eData As AdvancedData Ptr, ByVal User As WString P
 		End If
 	End If
 	
-	' Добавить фразу в список фраз по пингу !фраза фраза
-	' If lstrcmp(Lines[0], @AddPingAnswer) = 0 Then
-		' If WordsCount > 2 Then
-			' Dim w As WString Ptr = StrStr(MessageText, @IrcClient.WhiteSpaceString)
-			' If *eData->PingChatAnswersCount < MaxPingChatAnswers Then
-				' lstrcpy(@eData->PCA[*eData->PingChatAnswersCount].Answer, @w[1])
-				' *eData->PingChatAnswersCount += 1
-				' eData->objClient.SendIrcMessage(User, @CommandDone)
-			' End If
-		' End If
-	' End If
-	
-	' Количество фраз в списке по пингу !фразы
-	' If lstrcmp(Lines[0], @PcaCountCommand) = 0 Then
-		' Dim strBuffer As WString * 100 = Any
-		' itow(*eData->PingChatAnswersCount, @strBuffer, 10)
-		' eData->objClient.SendIrcMessage(User, @"Количество фраз в списке по пингу")
-		' eData->objClient.SendIrcMessage(User, @strBuffer)
-	' End If
-	
 	' Сказать реальное значение ника пользователя
 	
 	' Игра крестики‐нолики
@@ -363,9 +344,6 @@ Function Ping(ByVal AdvData As Any Ptr, ByVal Server As WString Ptr)As ResultTyp
 	lstrcat(strTemp, Server)
 	eData->objClient.SendRawMessage(strTemp)
 	
-	' Сервер доступен
-	ServerAvailable = True
-	
 	Return ResultType.None
 End Function
 
@@ -417,24 +395,6 @@ Function CtcpNotice(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByV
 	Return ResultType.None
 End Function
 
-' Проверка соединения с сервером
-Function ThreadFunction(ByVal lpParam As LPVOID)As DWORD
-	Do
-		' Опускаем флаг, что сервер доступен
-		ServerAvailable = False
-		' Ждём 10 минут
-		SleepEx(1000 * 60 * 10, 0)
-		' За это время от сервера должен прийти сигнал
-		' Если не было сигнала от сервера, то выходим
-	Loop While ServerAvailable
-	
-	If Not ProgramExit Then
-		ExitProcess(1)
-	End If
-	
-	Return 0
-End Function
-
 Sub ServerError(ByVal AdvData As Any Ptr, ByVal Message As WString Ptr)
 	ExitProcess(1)
 End Sub
@@ -451,23 +411,8 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 		AdvData.OutHandle = GetStdHandle(STD_OUTPUT_HANDLE)
 		AdvData.ErrorHandle = GetStdHandle(STD_ERROR_HANDLE)
 		
-		' Имя исполняемого файла
-		AdvData.ExeFileNameLength = GetModuleFileName(0, @AdvData.ExeFileName, AdvancedData.StaticBufferSize)
-		If AdvData.ExeFileNameLength <> 0 Then
-			' Вырезать имя файла, оставить только путь
-			lstrcpy(@AdvData.ExeDirName, @AdvData.ExeFileName)
-			PathRemoveFileSpec(@AdvData.ExeDirName)
-			PathCombine(@AdvData.IniFilename, @AdvData.ExeDirName, "bot.dat")
-			
-			REM ExitProcess(0)
-		End If
-		
 		' Дополнительные данные, передающиеся в каждом событии
 		AdvData.objClient.ExtendedData = @AdvData
-		
-		' Дополнительный счётчик
-		ServerAvailable = False
-		ProgramExit = False
 		
 		' События
 		AdvData.objClient.SendedRawMessageEvent = @SendedRawMessage
@@ -477,7 +422,7 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 		AdvData.objClient.PrivateMessageEvent = @IrcPrivateMessage
 		AdvData.objClient.CtcpMessageEvent = @CtcpMessage
 		AdvData.objClient.CtcpNoticeEvent = @CtcpNotice
-		AdvData.objClient.PingEvent = @Ping ' Псевдотаймер
+		AdvData.objClient.PingEvent = @Ping
 		AdvData.objClient.UserJoinedEvent = @UserJoined
 		AdvData.objClient.ServerErrorEvent = @ServerError
 		
@@ -494,56 +439,19 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 		AdvData.objClient.PongEvent = NULL
 		AdvData.objClient.ModeEvent = NULL
 		
-		' Отображение базы данных с фразами
-		' Dim hFile As HANDLE = CreateFile(@AdvData.IniFilename, GENERIC_READ + GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL)
-		' If hFile <> INVALID_HANDLE_VALUE Then
-			
-			' Dim hFileMap As Handle = CreateFileMapping(hFile, 0, PAGE_READWRITE, 0, DataBaseLength, 0)
-			' If hFileMap <> 0 Then
-				
-				' Dim b As Byte Ptr = CPtr(Byte Ptr, MapViewOfFile(hFileMap, FILE_MAP_ALL_ACCESS, 0, 0, 0))
-				' If b <> 0 Then
-					' Фразы в чате по пингу
-					' AdvData.PingChatAnswersCount = CPtr(Integer Ptr, b)
-					' AdvData.PCA = CPtr(PingChatAnswers Ptr, b + SizeOf(Integer))
-					' AdvData.PcaIndex = CPtr(Integer Ptr, b + SizeOf(Integer) + MaxPingChatAnswers * SizeOf(PingChatAnswers))
-					' AdvData.TimerCounter = CPtr(Integer Ptr, b + SizeOf(Integer) + MaxPingChatAnswers * SizeOf(PingChatAnswers) + SizeOf(Integer))
-					
-					' Стартовать второй поток, который будет проверять соединение с сервером
-					Dim hThread As HANDLE = CreateThread(NULL, 0, @ThreadFunction, @AdvData, 0, NULL)		
-					' Инициализация: сервер порт ник юзер описание
-					If AdvData.objClient.OpenIrc(AdvData.Args[ServerIndex], AdvData.Args[PortIndex], AdvData.Args[LocalServerIndex], AdvData.Args[LocalPortIndex], AdvData.Args[PasswordIndex], AdvData.Args[NickIndex], AdvData.Args[UserIndex], AdvData.Args[DescriptionIndex], False) = ResultType.None Then
-						' Всё идёт по плану
-						Do
-						Loop While AdvData.objClient.GetData() = ResultType.None
-						' Закрыть
-						AdvData.objClient.CloseIrc()
-					End If
-					' UnmapViewOfFile(b)
-				' End If
-				' CloseHandle(hFileMap)
-			' End If
-			' CloseHandle(hFile)
-		' End If
+		' Инициализация: сервер порт ник юзер описание
+		If AdvData.objClient.OpenIrc(AdvData.Args[ServerIndex], AdvData.Args[PortIndex], AdvData.Args[LocalServerIndex], AdvData.Args[LocalPortIndex], AdvData.Args[PasswordIndex], AdvData.Args[NickIndex], AdvData.Args[UserIndex], AdvData.Args[DescriptionIndex], False) = ResultType.None Then
+			' Всё идёт по плану
+			Do
+			Loop While AdvData.objClient.GetData() = ResultType.None
+			' Закрыть
+			AdvData.objClient.CloseIrc()
+		End If
 	Else
 		' Количество аргументов меньше 6
 		' выдать справку по использованию
 	End If
 	
-	ProgramExit = True
-	
 	LocalFree(AdvData.Args)
 	Return 0
 End Function
-
-Sub GetHttpDate(ByVal Buffer As WString Ptr, ByVal dt As SYSTEMTIME Ptr)
-	' Tue, 15 Nov 1994 12:45:26 GMT
-	Dim dtBufferLength As Integer = GetDateFormat(LOCALE_INVARIANT, 0, dt, @DateFormatString, Buffer, 31) - 1
-	GetTimeFormat(LOCALE_INVARIANT, 0, dt, @TimeFormatString, @Buffer[dtBufferLength], 31 - dtBufferLength)
-End Sub
-
-Sub GetHttpDate(ByVal Buffer As WString Ptr)
-	Dim dt As SYSTEMTIME = Any
-	GetSystemTime(@dt)
-	GetHttpDate(Buffer, @dt)
-End Sub

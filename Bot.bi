@@ -13,11 +13,6 @@ Declare Function ltow cdecl Alias "_ltow" (ByVal Value As Long, ByVal src As WSt
 Declare Function wtoi cdecl Alias "_wtoi" (ByVal src As WString Ptr)As Integer
 Declare Function wtol cdecl Alias "_wtol" (ByVal src As WString Ptr)As Long
 
-' Заполняет буфер датой и временем в http формате
-Declare Sub GetHttpDate Overload(ByVal Buffer As WString Ptr)
-Declare Sub GetHttpDate Overload(ByVal Buffer As WString Ptr, ByVal dt As SYSTEMTIME Ptr)
-
-
 REM имя_екзешника сервер порт пароль ник пользователь описание ник_админа каналы
 Const ServerIndex As Integer = 1
 Const PortIndex As Integer = 2
@@ -57,9 +52,7 @@ Const MessageTimeWait As Integer = 5000
 ' вывести результат компиляции в чат
 ' запустить и вывести результат в чат
 
-' Не реализовано или не будет поддерживаться
-Const AddPingAnswer = "фраза"
-Const PcaCountCommand = "фразы"
+' Не реализовано
 Const CharCommand = "символ"
 Const PingCommand = "пинг"
 
@@ -72,17 +65,11 @@ Const DoSourceCommand = "запускай"
 ' Очищает исходник
 Const ClearSourceCommand = "чисть"
 
-Const DateFormatString = "ddd, dd MMM yyyy "
-Const TimeFormatString = "HH:mm:ss GMT"
-
 ' Команда выполнена
 Const CommandDone = "Команда выполнена"
 
 Const AdminRealName = "Эрик Замабувараев‐Ёмолкуу"
 Const OSVersion = "Bot version 20 written in FreeBASIC / Microsoft Windows Server 2003 R2 Standard x64 Edition Service Pack 2 Intel Xeon CPU 2.20GHz 512 RAM"
-
-' Наш канал для реагирования
-Const FreeBASICruCnahhel = "##freebasic-ru"
 
 Declare Function ThreadFunction(ByVal lpParam As LPVOID)As DWORD
 Declare Function EntryPoint Alias "EntryPoint"()As Integer
@@ -108,25 +95,6 @@ Type AdvancedData
 	Dim Args As WString Ptr Ptr
 	Dim ArgsCount As Long ' Количество
 	
-	' Простой счётчик
-	Dim TimerCounter As Integer Ptr
-	
-	' Имя исполняемого файла
-	Dim ExeFileName As WString * (StaticBufferSize + 1)
-	Dim ExeFileNameLength As DWORD
-	Dim ExeDirName As WString * (StaticBufferSize + 1)
-	
-	' Файл с фразами в чате
-	Dim IniFilename As WString * (StaticBufferSize + 1)
-	
-	' Количество фраз по пингу
-	Dim PingChatAnswersCount As Integer Ptr
-	' Фразы в чате по пингу
-	Dim PCA As PingChatAnswers Ptr
-	
-	' Текущая фраза по пингу
-	Dim PcaIndex As Integer Ptr
-	
 End Type
 
 ' Количество фраз в чате по пингу
@@ -136,9 +104,3 @@ Const MaxPingChatAnswers As Integer = 2048
 Const DataBaseLength As Integer = SizeOf(Integer) + MaxPingChatAnswers * SizeOf(PingChatAnswers) + SizeOf(Integer) + SizeOf(Integer)
 
 Declare Sub ProcessAdminCommand(ByVal eData As AdvancedData Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)
-
-
-' Доступность сервера
-Dim Shared ServerAvailable As Boolean
-' Программа закрывается
-Dim Shared ProgramExit As Boolean
