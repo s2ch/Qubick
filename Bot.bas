@@ -354,7 +354,6 @@ Function CtcpNotice(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByV
 				End If
 		End Select
 	End If
-	REM eData->objClient.SendIrcMessage(FreeBASICruCnahhel, MessageText)
 	Return ResultType.None
 End Function
 
