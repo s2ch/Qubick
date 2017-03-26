@@ -40,6 +40,7 @@ Const SayCommand = "!скажи"
 Const RawCommand = "!ну"
 Const ExecuteCommand = "!делай"
 Const HelpCommand = "!справка"
+Const JuickCommand = "!жуйк"
 Const ProcessInfoCommand = "!память"
 Const ProcessesListCommand = "!процессы"
 
@@ -67,6 +68,7 @@ Const ClearSourceCommand = "чисть"
 
 ' Команда выполнена
 Const CommandDone = "Команда выполнена"
+Const JuickCommandDone = "Отправляю на жуйкочан"
 
 Const AdminRealName = "Эрик Замабувараев‐Ёмолкуу"
 Const OSVersion = "Bot version 20 written in FreeBASIC / Microsoft Windows Server 2003 R2 Standard x64 Edition Service Pack 2 Intel Xeon CPU 2.20GHz 512 RAM"
