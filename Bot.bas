@@ -202,6 +202,11 @@ Sub ProcessAdminCommand(ByVal eData As AdvancedData Ptr, ByVal User As WString P
 		End If
 	End If
 	
+	' Команда !жуйк текст
+	If lstrcmp(Lines[0], @JuickCommand) = 0 Then
+		eData->objClient.SendIrcMessage(User, @JuickCommandDone)
+	End If
+	
 	' Сказать реальное значение ника пользователя
 	
 	' Игра крестики‐нолики
@@ -265,10 +270,6 @@ Function IrcPrivateMessage(ByVal AdvData As Any Ptr, ByVal User As WString Ptr, 
 	' Ответить пользователю в чат
 	Answer(eData, User, MessageText)
 	
-	' Команда отправки кому‐то от своего имени
-	REM If WordsCount Then
-	REM End If
-	
 	' Команда от админа
 	If lstrcmp(User, eData->Args[AdminNickIndex]) = 0 Then
 		ProcessAdminCommand(eData, User, MessageText)
@@ -281,55 +282,17 @@ Function UserJoined(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVa
 	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
 	
 	' Если название канала начинается с двоеточия, то убрать
-	' Dim wChannel As WString Ptr = Any
-	' If Channel[0] = 58 Then
-		' wChannel = @Channel[1]
-	' Else
-		' wChannel = @Channel[0]
-	' End If
-	
-	REM ' Если имя канала совпадает с нашим, отправить на канал пользователю фразу
-	REM If lstrcmp(Channel, FreeBASICruCnahhel) = 0 Then
-		REM Dim strTemp As WString * (IrcClient.MaxBytesCount + 1) = Any
-		
-		REM lstrcat(lstrcat(lstrcat(lstrcpy(strTemp, UserName), IrcClient.CommaSeparatorString), IrcClient.WhiteSpaceString), "Ну чё?")
-		
-		REM eData->objClient.SendIrcMessage(FreeBASICruCnahhel, strTemp)
-		REM SleepEx(3000, 0)
-		REM eData->objClient.SendIrcMessage(FreeBASICruCnahhel, "Есть чё?")
-	REM End If
-	
-	' Делаем дополнительные действия по таймеру
-	' *eData->TimerCounter += 1
-	' If *eData->TimerCounter >= 10 Then
-		' *eData->TimerCounter = 0
-		
-		' Отправить фразу на канал
-		' eData->objClient.SendIrcMessage(*w, eData->PCA[*eData->PcaIndex].Answer)
-		' Увеличить индекс
-		' *eData->PcaIndex += 1
-		' If *eData->PcaIndex >= *eData->PingChatAnswersCount Then
-			' *eData->PcaIndex = 0
-		' End If
-	' End If
+	Dim wChannel As WString Ptr = Any
+	If Channel[0] = 58 Then
+		wChannel = @Channel[1]
+	Else
+		wChannel = @Channel[0]
+	End If
 	
 	' Запросить информацию о клиенте, если это не мы
 	If lstrcmp(eData->Args[NickIndex], UserName) <> 0 Then
 		eData->objClient.SendCtcpMessage(UserName, CtcpMessageType.Version, 0)
 	End If
-	
-	
-	' Число в строку
-	' Dim strBuffer As WString * 100 = Any
-	' itow(*eData->TimerCounter, @strBuffer, 10)
-	' eData->objClient.SendIrcMessage(*eData->Args[AdminNickIndex], "Счётчик таймера")
-	' eData->objClient.SendIrcMessage(*eData->Args[AdminNickIndex], strBuffer)
-	
-	' SleepEx(3000, 0)
-	
-	' itow(*eData->PcaIndex, @strBuffer, 10)
-	' eData->objClient.SendIrcMessage(*eData->Args[AdminNickIndex], "Текущий индекс в списке фраз по пингу")
-	' eData->objClient.SendIrcMessage(*eData->Args[AdminNickIndex], strBuffer)
 	
 	Return ResultType.None
 End Function
