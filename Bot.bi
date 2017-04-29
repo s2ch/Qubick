@@ -4,8 +4,7 @@
 #include once "windows.bi"
 #include once "win\shellapi.bi"
 #include once "win\shlwapi.bi"
-#include once "AsmIrc.bi"
-#include once "IrcEvents.bi"
+#include once "Irc.bi"
 #include once "WriteLine.bi"
 
 Declare Function itow cdecl Alias "_itow" (ByVal Value As Integer, ByVal src As WString Ptr, ByVal radix As Integer)As WString Ptr
@@ -26,9 +25,6 @@ Const AdminNickIndex As Integer = 9
 ' Индекс, с которого начинается отсчёт каналов в параметрах программы
 Const StartChannelIndex As Integer = 10
 
-' Серверное приветствие
-Const RPL_WELLCOME = "001"
-
 ' Константы команд
 Const AllCommand = "ник зайди выйди сгинь тема скажи ну делай справка память процессы"
 Const QuitCommand = "!сгинь"
@@ -43,6 +39,7 @@ Const HelpCommand = "!справка"
 Const JuickCommand = "!жуйк"
 Const ProcessInfoCommand = "!память"
 Const ProcessesListCommand = "!процессы"
+Const CalculateCommand = "!считай"
 
 ' Задержка между сообщениями, чтобы не выгнали за флуд
 Const MessageTimeWait As Integer = 5000

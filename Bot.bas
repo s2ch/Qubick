@@ -5,6 +5,8 @@
 #include once "ProcessMemoryInfo.bi"
 #include once "win\tlhelp32.bi"
 #include once "DateTimeToString.bi"
+#include once "IrcReplies.bi"
+#include once "IrcEvents.bi"
 
 ' Что требуется от этого бота?
 ' Сидеть на канале
@@ -20,6 +22,7 @@ Sub Answer(ByVal eData As AdvancedData Ptr, ByVal User As WString Ptr, ByVal Mes
 		' Найти ключевую фразу
 		' Найти ответ
 		' Отправить пользвателю
+		' Закрытие
 		CloseHandle(hFile)
 	End If
 End Sub
@@ -207,6 +210,22 @@ Sub ProcessAdminCommand(ByVal eData As AdvancedData Ptr, ByVal User As WString P
 		eData->objClient.SendIrcMessage(User, @JuickCommandDone)
 	End If
 	
+	' Команда !считай текст
+	If lstrcmp(Lines[0], @CalculateCommand) = 0 Then
+		If WordsCount > 1 Then
+			Dim wCalc As WString Ptr = @(StrStr(MessageText, @IrcClient.WhiteSpaceString))[1]
+			' Создать файл, записать в него текст
+			' Print 
+			' Скомпилировать
+			' Создать процесс, перенаправить вывод к себе
+			' Отправить вывод в чат
+		Else
+			Dim strQuitString As WString * SizeOf(WString)
+			' eData->objClient.QuitFromServer(@strQuitString)
+		End If
+	End If
+	
+	
 	' Сказать реальное значение ника пользователя
 	
 	' Игра крестики‐нолики
@@ -231,7 +250,7 @@ End Sub
 
 ' Любое серверное сообщение
 Function ServerMessage(ByVal AdvData As Any Ptr, ByVal ServerCode As WString Ptr, ByVal MessageText As WString Ptr)As ResultType
-	If lstrcmp(ServerCode, @RPL_WELLCOME) = 0 Then
+	If lstrcmp(ServerCode, @RPL_WELCOME) = 0 Then
 		Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
 		' Присоединиться к каналам
 		For i As Integer = StartChannelIndex To eData->ArgsCount - 1
