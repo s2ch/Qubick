@@ -161,11 +161,12 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 	' Массив параметров командной строки
 	AdvData.Args = CommandLineToArgvW(GetCommandLine(), @AdvData.ArgsCount)
 	
+	' Идентификаторы ввода‐вывода
+	AdvData.InHandle = GetStdHandle(STD_INPUT_HANDLE)
+	AdvData.OutHandle = GetStdHandle(STD_OUTPUT_HANDLE)
+	AdvData.ErrorHandle = GetStdHandle(STD_ERROR_HANDLE)
+	
 	If AdvData.ArgsCount > 6 Then
-		' Идентификаторы ввода‐вывода
-		AdvData.InHandle = GetStdHandle(STD_INPUT_HANDLE)
-		AdvData.OutHandle = GetStdHandle(STD_OUTPUT_HANDLE)
-		AdvData.ErrorHandle = GetStdHandle(STD_ERROR_HANDLE)
 		
 		' Дополнительные данные, передающиеся в каждом событии
 		AdvData.objClient.ExtendedData = @AdvData
@@ -206,6 +207,7 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 	Else
 		' Количество аргументов меньше 6
 		' выдать справку по использованию
+		WriteLine(AdvData.OutHandle, @HowToUseHelpMessage)
 	End If
 	
 	LocalFree(AdvData.Args)

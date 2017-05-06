@@ -69,6 +69,7 @@ Const JuickCommandDone = "Отправляю на жуйкочан"
 
 Const AdminRealName = "Эрик Замабувараев‐Ёмолкуу"
 Const OSVersion = "Bot version 20 written in FreeBASIC / Microsoft Windows Server 2003 R2 Standard x64 Edition Service Pack 2 Intel Xeon CPU 2.20GHz 512 RAM"
+Const HowToUseHelpMessage = !"Использование:\r\nbot.exe сервер порт локальный-IP локальный-порт пароль ник user описание ник-администратора каналы"
 
 Declare Function ThreadFunction(ByVal lpParam As LPVOID)As DWORD
 Declare Function EntryPoint Alias "EntryPoint"()As Integer
