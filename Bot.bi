@@ -27,19 +27,41 @@ Const StartChannelIndex As Integer = 10
 
 ' Константы команд
 Const AllCommand = "ник зайди выйди сгинь тема скажи ну делай справка память процессы"
+' Выход из сети
 Const QuitCommand = "!сгинь"
+' Сменить ник
 Const NickCommand = "!ник"
+' Зайти на канал
 Const JoinCommand = "!зайди"
+' Покинуть канал
 Const PartCommand = "!выйди"
+' Сменить тему
 Const TopicCommand = "!тема"
+' Сказать в чат
 Const SayCommand = "!скажи"
+' Сказать сырую команду
 Const RawCommand = "!ну"
+' Выполнить на сервере файл
 Const ExecuteCommand = "!делай"
+' Показать список команд
 Const HelpCommand = "!справка"
+' Отправить фразу на жуйк
 Const JuickCommand = "!жуйк"
+' Показать использование памяти процесса
 Const ProcessInfoCommand = "!память"
+' Показать список процессов
 Const ProcessesListCommand = "!процессы"
+' Вычислить выражение
 Const CalculateCommand = "!считай"
+
+' Добавить ключевую фразу для реагирования
+Const AddQuestionCommand = "!вопрос"
+' Добавить ответ
+Const AddAnswerCommand = "!ответ"
+' Показать список ключевых фраз
+Const QuestionListCommand = "!вопросы"
+' Показать список ответов
+Const AnswerListCommand = "!ответы"
 
 ' Задержка между сообщениями, чтобы не выгнали за флуд
 Const MessageTimeWait As Integer = 5000
@@ -108,3 +130,11 @@ Declare Sub ProcessAdminCommand(ByVal eData As AdvancedData Ptr, ByVal User As W
 
 ' Ответить на сообщение
 Declare Sub AnswerToChat(ByVal eData As AdvancedData Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)
+
+Declare Sub GetQuestionList(ByVal eData As AdvancedData Ptr, ByVal User As WString Ptr)
+
+Declare Sub GetAnswerList(ByVal eData As AdvancedData Ptr, ByVal User As WString Ptr, ByVal QuestionIndex As Integer)
+
+Declare Sub AddQuestion(ByVal eData As AdvancedData Ptr, ByVal User As WString Ptr, ByVal Question As WString Ptr)
+
+Declare Sub AddAnswer(ByVal eData As AdvancedData Ptr, ByVal User As WString Ptr, ByVal QuestionIndex As Integer, ByVal Answer As WString Ptr)

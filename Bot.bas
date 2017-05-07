@@ -40,7 +40,7 @@ Function ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, 
 	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
 	
 	' Здесь можно отправлять ответ на сообщение
-	' Answer(eData, Channel, MessageText)
+	AnswerToChat(eData, Channel, MessageText)
 	
 	' Можно искать ссылки в тексте, чтобы ходить по ним
 	
@@ -195,6 +195,11 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 		AdvData.objClient.DisconnectEvent = NULL
 		AdvData.objClient.PongEvent = NULL
 		AdvData.objClient.ModeEvent = NULL
+		
+		' Инициализация случайных чисел
+		Dim dtNow As SYSTEMTIME = Any
+		GetSystemTime(@dtNow)
+		srand(dtNow.wMilliseconds - dtNow.wSecond + dtNow.wMinute + dtNow.wHour)
 		
 		' Инициализация: сервер порт ник юзер описание
 		If AdvData.objClient.OpenIrc(AdvData.Args[ServerIndex], AdvData.Args[PortIndex], AdvData.Args[LocalServerIndex], AdvData.Args[LocalPortIndex], AdvData.Args[PasswordIndex], AdvData.Args[NickIndex], AdvData.Args[UserIndex], AdvData.Args[DescriptionIndex], False) = ResultType.None Then
