@@ -170,6 +170,8 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 		
 		' Дополнительные данные, передающиеся в каждом событии
 		AdvData.objClient.ExtendedData = @AdvData
+		' Кодировка
+		AdvData.objClient.CodePage = CP_UTF8
 		
 		' События
 		AdvData.objClient.SendedRawMessageEvent = @SendedRawMessage
