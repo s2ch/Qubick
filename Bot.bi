@@ -7,11 +7,6 @@
 #include once "Irc.bi"
 #include once "WriteLine.bi"
 
-Declare Function itow cdecl Alias "_itow" (ByVal Value As Integer, ByVal src As WString Ptr, ByVal radix As Integer)As WString Ptr
-Declare Function ltow cdecl Alias "_ltow" (ByVal Value As Long, ByVal src As WString Ptr, ByVal radix As Integer)As WString Ptr
-Declare Function wtoi cdecl Alias "_wtoi" (ByVal src As WString Ptr)As Integer
-Declare Function wtol cdecl Alias "_wtol" (ByVal src As WString Ptr)As Long
-
 REM имя_екзешника сервер порт пароль ник пользователь описание ник_админа каналы
 Const ServerIndex As Integer = 1
 Const PortIndex As Integer = 2
