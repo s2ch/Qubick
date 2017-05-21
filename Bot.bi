@@ -7,19 +7,6 @@
 #include once "Irc.bi"
 #include once "WriteLine.bi"
 
-REM имя_екзешника сервер порт пароль ник пользователь описание ник_админа каналы
-Const ServerIndex As Integer = 1
-Const PortIndex As Integer = 2
-Const LocalServerIndex As Integer = 3
-Const LocalPortIndex As Integer = 4
-Const PasswordIndex As Integer = 5
-Const NickIndex As Integer = 6
-Const UserIndex As Integer = 7
-Const DescriptionIndex As Integer = 8
-Const AdminNickIndex As Integer = 9
-' Индекс, с которого начинается отсчёт каналов в параметрах программы
-Const StartChannelIndex As Integer = 10
-
 ' Константы команд
 Const AllCommand = "ник зайди выйди сгинь тема скажи ну делай справка память процессы"
 ' Выход из сети
@@ -107,10 +94,6 @@ Type AdvancedData
 	Dim InHandle As Handle
 	Dim OutHandle As Handle
 	Dim ErrorHandle As Handle
-	
-	' Параметры командной строки
-	Dim Args As WString Ptr Ptr
-	Dim ArgsCount As Long ' Количество
 	
 End Type
 

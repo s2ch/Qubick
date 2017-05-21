@@ -7,6 +7,18 @@
 #include once "IrcReplies.bi"
 #include once "IrcEvents.bi"
 
+Const IrcServer = "chat.freenode.net"
+Const Port = "6667"
+Const LocalAddress = "0.0.0.0"
+Const LocalPort = ""
+Const Password = ""
+Const BotNick = "Station922_mkv"
+Const UserString = "FreeBASIC"
+Const Description = "Irc bot written in FreeBASIC"
+Const AdminNick = "writed"
+Const Channels = "#s2ch ##freebasic-ru"
+Const MainChannel = "#s2ch"
+
 ' Что требуется от этого бота?
 ' Сидеть на канале
 ' Выполнять команды от пользователя на локальном компе
@@ -28,9 +40,7 @@ Function ServerMessage(ByVal AdvData As Any Ptr, ByVal ServerCode As WString Ptr
 	If lstrcmp(ServerCode, @RPL_WELCOME) = 0 Then
 		Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
 		' Присоединиться к каналам
-		For i As Integer = StartChannelIndex To eData->ArgsCount - 1
-			eData->objClient.JoinChannel(eData->Args[i])
-		Next
+		eData->objClient.JoinChannel(Channels)
 	End If
 	Return ResultType.None
 End Function
@@ -51,7 +61,7 @@ Function ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, 
 	' Можно среагировать на точку — это пинг
 	
 	' Команда от админа
-	If lstrcmp(User, eData->Args[AdminNickIndex]) = 0 Then
+	If lstrcmp(User, @AdminNick) = 0 Then
 		ProcessAdminCommand(eData, Channel, MessageText)
 	End If
 	Return ResultType.None
@@ -65,7 +75,7 @@ Function IrcPrivateMessage(ByVal AdvData As Any Ptr, ByVal User As WString Ptr, 
 	AnswerToChat(eData, User, MessageText)
 	
 	' Команда от админа
-	If lstrcmp(User, eData->Args[AdminNickIndex]) = 0 Then
+	If lstrcmp(User, AdminNick) = 0 Then
 		ProcessAdminCommand(eData, User, MessageText)
 	End If
 	Return ResultType.None
@@ -84,7 +94,7 @@ Function UserJoined(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVa
 	End If
 	
 	' Запросить информацию о клиенте, если это не мы
-	If lstrcmp(eData->Args[NickIndex], UserName) <> 0 Then
+	If lstrcmp(@BotNick, UserName) <> 0 Then
 		eData->objClient.SendCtcpMessage(UserName, CtcpMessageType.Version, 0)
 	End If
 	
@@ -139,13 +149,11 @@ Function CtcpNotice(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByV
 				'
 			Case CtcpMessageType.Version
 				' Нужно как‐то отобразить информацию на текущем канале
-				If StartChannelIndex < eData->ArgsCount Then
-					Dim strTemp As WString * (IrcClient.MaxBytesCount + 1)
-					lstrcpy(@strTemp, FromUser)
-					lstrcat(@strTemp, @" использует ")
-					lstrcat(@strTemp, MessageText)
-					eData->objClient.SendIrcMessage(eData->Args[StartChannelIndex], @strTemp)
-				End If
+				Dim strTemp As WString * (IrcClient.MaxBytesCount + 1)
+				lstrcpy(@strTemp, FromUser)
+				lstrcat(@strTemp, @" использует ")
+				lstrcat(@strTemp, MessageText)
+				eData->objClient.SendIrcMessage(@MainChannel, @strTemp)
 		End Select
 	End If
 	Return ResultType.None
@@ -155,74 +163,70 @@ Sub ServerError(ByVal AdvData As Any Ptr, ByVal Message As WString Ptr)
 	ExitProcess(1)
 End Sub
 
-Function EntryPoint Alias "EntryPoint"()As Integer
+Function ServiceProc(ByVal lpParam As LPVOID)As DWORD
 	' Дополнительные данные
 	Dim AdvData As AdvancedData = Any
-	' Массив параметров командной строки
-	AdvData.Args = CommandLineToArgvW(GetCommandLine(), @AdvData.ArgsCount)
 	
 	' Идентификаторы ввода‐вывода
 	AdvData.InHandle = GetStdHandle(STD_INPUT_HANDLE)
 	AdvData.OutHandle = GetStdHandle(STD_OUTPUT_HANDLE)
 	AdvData.ErrorHandle = GetStdHandle(STD_ERROR_HANDLE)
 	
-	If AdvData.ArgsCount > 6 Then
 		
-		' Дополнительные данные, передающиеся в каждом событии
-		AdvData.objClient.ExtendedData = @AdvData
-		' Кодировка
-		AdvData.objClient.CodePage = CP_UTF8
+	' Дополнительные данные, передающиеся в каждом событии
+	AdvData.objClient.ExtendedData = @AdvData
+	' Кодировка
+	AdvData.objClient.CodePage = CP_UTF8
+	
+	' События
+#ifdef service
+	AdvData.objClient.SendedRawMessageEvent = NULL
+	AdvData.objClient.ReceivedRawMessageEvent = NULL
+#else
+	AdvData.objClient.SendedRawMessageEvent = @SendedRawMessage
+	AdvData.objClient.ReceivedRawMessageEvent = @ReceivedRawMessage
+#endif
+	AdvData.objClient.ServerMessageEvent = @ServerMessage
+	AdvData.objClient.ChannelMessageEvent = @ChannelMessage
+	AdvData.objClient.PrivateMessageEvent = @IrcPrivateMessage
+	AdvData.objClient.CtcpMessageEvent = @CtcpMessage
+	AdvData.objClient.CtcpNoticeEvent = @CtcpNotice
+	AdvData.objClient.UserJoinedEvent = @UserJoined
+	AdvData.objClient.ServerErrorEvent = @ServerError
+	
+	' События, которые бот не обрабатывает
+	' необходимо установить в NULL
+	AdvData.objClient.PingEvent = NULL
+	AdvData.objClient.NoticeEvent = NULL
+	AdvData.objClient.UserLeavedEvent = NULL
+	AdvData.objClient.NickChangedEvent = NULL
+	AdvData.objClient.TopicEvent = NULL
+	AdvData.objClient.QuitEvent = NULL
+	AdvData.objClient.KickEvent = NULL
+	AdvData.objClient.InviteEvent = NULL
+	AdvData.objClient.DisconnectEvent = NULL
+	AdvData.objClient.PongEvent = NULL
+	AdvData.objClient.ModeEvent = NULL
+	
+	' Инициализация случайных чисел
+	Dim dtNow As SYSTEMTIME = Any
+	GetSystemTime(@dtNow)
+	srand(dtNow.wMilliseconds - dtNow.wSecond + dtNow.wMinute + dtNow.wHour)
+	
+	' Инициализация: сервер порт ник юзер описание
+	If AdvData.objClient.OpenIrc(@IrcServer, @Port, @LocalAddress, @LocalPort, @Password, @BotNick, @UserString, @Description, False) = ResultType.None Then
+		' Всё идёт по плану
 		
-		' События
-		AdvData.objClient.SendedRawMessageEvent = @SendedRawMessage
-		AdvData.objClient.ReceivedRawMessageEvent = @ReceivedRawMessage
-		AdvData.objClient.ServerMessageEvent = @ServerMessage
-		AdvData.objClient.ChannelMessageEvent = @ChannelMessage
-		AdvData.objClient.PrivateMessageEvent = @IrcPrivateMessage
-		AdvData.objClient.CtcpMessageEvent = @CtcpMessage
-		AdvData.objClient.CtcpNoticeEvent = @CtcpNotice
-		AdvData.objClient.PingEvent = @Ping
-		AdvData.objClient.UserJoinedEvent = @UserJoined
-		AdvData.objClient.ServerErrorEvent = @ServerError
-		
-		' События, которые бот не обрабатывает
-		' необходимо установить в NULL
-		AdvData.objClient.NoticeEvent = NULL
-		AdvData.objClient.UserLeavedEvent = NULL
-		AdvData.objClient.NickChangedEvent = NULL
-		AdvData.objClient.TopicEvent = NULL
-		AdvData.objClient.QuitEvent = NULL
-		AdvData.objClient.KickEvent = NULL
-		AdvData.objClient.InviteEvent = NULL
-		AdvData.objClient.DisconnectEvent = NULL
-		AdvData.objClient.PongEvent = NULL
-		AdvData.objClient.ModeEvent = NULL
-		
-		' Инициализация случайных чисел
-		Dim dtNow As SYSTEMTIME = Any
-		GetSystemTime(@dtNow)
-		srand(dtNow.wMilliseconds - dtNow.wSecond + dtNow.wMinute + dtNow.wHour)
-		
-		' Инициализация: сервер порт ник юзер описание
-		If AdvData.objClient.OpenIrc(AdvData.Args[ServerIndex], AdvData.Args[PortIndex], AdvData.Args[LocalServerIndex], AdvData.Args[LocalPortIndex], AdvData.Args[PasswordIndex], AdvData.Args[NickIndex], AdvData.Args[UserIndex], AdvData.Args[DescriptionIndex], False) = ResultType.None Then
-			' Всё идёт по плану
-			
-			' Получение данных от сервера и разбор данных
-			Dim strReceiveBuffer As WString * (IrcClient.MaxBytesCount + 1) = Any
-			Dim intResult As ResultType = Any
-			Do
-				intResult = AdvData.objClient.ReceiveData(@strReceiveBuffer)
-				intResult = AdvData.objClient.ParseData(@strReceiveBuffer)
-			Loop While intResult = ResultType.None
-			' Закрыть
-			AdvData.objClient.CloseIrc()
-		End If
-	Else
-		' Количество аргументов меньше 6
-		' выдать справку по использованию
-		WriteLine(AdvData.OutHandle, @HowToUseHelpMessage)
+		' Получение данных от сервера и разбор данных
+		Dim strReceiveBuffer As WString * (IrcClient.MaxBytesCount + 1) = Any
+		Dim intResult As ResultType = Any
+		Do
+			intResult = AdvData.objClient.ReceiveData(@strReceiveBuffer)
+			intResult = AdvData.objClient.ParseData(@strReceiveBuffer)
+		Loop While intResult = ResultType.None
+		' Закрыть
+		AdvData.objClient.CloseIrc()
 	End If
 	
-	LocalFree(AdvData.Args)
 	Return 0
 End Function
