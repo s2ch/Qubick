@@ -16,7 +16,7 @@ Const BotNick = "Station922_mkv"
 Const UserString = "FreeBASIC"
 Const Description = "Irc bot written in FreeBASIC"
 Const AdminNick = "writed"
-Const Channels = "#s2ch ##freebasic-ru"
+Const Channels = "#s2ch,##freebasic-ru"
 Const MainChannel = "#s2ch"
 
 ' Что требуется от этого бота?
@@ -172,7 +172,6 @@ Function ServiceProc(ByVal lpParam As LPVOID)As DWORD
 	AdvData.OutHandle = GetStdHandle(STD_OUTPUT_HANDLE)
 	AdvData.ErrorHandle = GetStdHandle(STD_ERROR_HANDLE)
 	
-		
 	' Дополнительные данные, передающиеся в каждом событии
 	AdvData.objClient.ExtendedData = @AdvData
 	' Кодировка
@@ -213,20 +212,23 @@ Function ServiceProc(ByVal lpParam As LPVOID)As DWORD
 	GetSystemTime(@dtNow)
 	srand(dtNow.wMilliseconds - dtNow.wSecond + dtNow.wMinute + dtNow.wHour)
 	
-	' Инициализация: сервер порт ник юзер описание
-	If AdvData.objClient.OpenIrc(@IrcServer, @Port, @LocalAddress, @LocalPort, @Password, @BotNick, @UserString, @Description, False) = ResultType.None Then
-		' Всё идёт по плану
-		
-		' Получение данных от сервера и разбор данных
-		Dim strReceiveBuffer As WString * (IrcClient.MaxBytesCount + 1) = Any
-		Dim intResult As ResultType = Any
-		Do
-			intResult = AdvData.objClient.ReceiveData(@strReceiveBuffer)
-			intResult = AdvData.objClient.ParseData(@strReceiveBuffer)
-		Loop While intResult = ResultType.None
-		' Закрыть
-		AdvData.objClient.CloseIrc()
-	End If
+	Do
+		' Инициализация: сервер порт ник юзер описание
+		If AdvData.objClient.OpenIrc(@IrcServer, @Port, @LocalAddress, @LocalPort, @Password, @BotNick, @UserString, @Description, False) = ResultType.None Then
+			' Всё идёт по плану
+			
+			' Получение данных от сервера и разбор данных
+			Dim strReceiveBuffer As WString * (IrcClient.MaxBytesCount + 1) = Any
+			Dim intResult As ResultType = Any
+			Do
+				intResult = AdvData.objClient.ReceiveData(@strReceiveBuffer)
+				intResult = AdvData.objClient.ParseData(@strReceiveBuffer)
+			Loop While intResult = ResultType.None
+			' Закрыть
+			AdvData.objClient.CloseIrc()
+		End If
+		Sleep_(60 * 1000)
+	Loop
 	
 	Return 0
 End Function

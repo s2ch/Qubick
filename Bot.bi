@@ -46,7 +46,7 @@ Const QuestionListCommand = "!вопросы"
 Const AnswerListCommand = "!ответы"
 
 ' Задержка между сообщениями, чтобы не выгнали за флуд
-Const MessageTimeWait As Integer = 5000
+Const MessageTimeWait As Integer = 3000
 
 ' Создать файл, который можно компилировать
 ' Добавить в него текст
@@ -72,8 +72,7 @@ Const CommandDone = "Команда выполнена"
 Const JuickCommandDone = "Отправляю на жуйкочан"
 
 Const AdminRealName = "Эрик Замабувараев‐Ёмолкуу"
-Const OSVersion = "Bot version 20 written in FreeBASIC / Microsoft Windows Server 2003 R2 Standard x64 Edition Service Pack 2 Intel Xeon CPU 2.20GHz 512 RAM"
-Const HowToUseHelpMessage = !"Использование:\r\nbot.exe сервер порт локальный-IP локальный-порт пароль ник user описание ник-администратора каналы"
+Const OSVersion = "Bot version 30 written in FreeBASIC / Microsoft Windows Server 2003 R2 Standard x64 Edition Service Pack 2 Intel Xeon CPU 2.20GHz 512 RAM"
 
 Declare Function ThreadFunction(ByVal lpParam As LPVOID)As DWORD
 Declare Function EntryPoint Alias "EntryPoint"()As Integer
