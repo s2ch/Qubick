@@ -191,7 +191,7 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 		AdvData.objClient.UserLeavedEvent = NULL
 		AdvData.objClient.NickChangedEvent = NULL
 		AdvData.objClient.TopicEvent = NULL
-		AdvData.objClient.UserQuitEvent = NULL
+		AdvData.objClient.QuitEvent = NULL
 		AdvData.objClient.KickEvent = NULL
 		AdvData.objClient.InviteEvent = NULL
 		AdvData.objClient.DisconnectEvent = NULL
@@ -206,8 +206,14 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 		' Инициализация: сервер порт ник юзер описание
 		If AdvData.objClient.OpenIrc(AdvData.Args[ServerIndex], AdvData.Args[PortIndex], AdvData.Args[LocalServerIndex], AdvData.Args[LocalPortIndex], AdvData.Args[PasswordIndex], AdvData.Args[NickIndex], AdvData.Args[UserIndex], AdvData.Args[DescriptionIndex], False) = ResultType.None Then
 			' Всё идёт по плану
+			
+			' Получение данных от сервера и разбор данных
+			Dim strReceiveBuffer As WString * (IrcClient.MaxBytesCount + 1) = Any
+			Dim intResult As ResultType = Any
 			Do
-			Loop While AdvData.objClient.GetData() = ResultType.None
+				intResult = AdvData.objClient.ReceiveData(@strReceiveBuffer)
+				intResult = AdvData.objClient.ParseData(@strReceiveBuffer)
+			Loop While intResult = ResultType.None
 			' Закрыть
 			AdvData.objClient.CloseIrc()
 		End If
