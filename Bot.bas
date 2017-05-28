@@ -6,19 +6,7 @@
 #include once "DateTimeToString.bi"
 #include once "IrcReplies.bi"
 #include once "IrcEvents.bi"
-
-Const IrcServer = "chat.freenode.net"
-Const Port = "6667"
-Const LocalAddress = "0.0.0.0"
-Const LocalPort = ""
-
-Const ServerPassword = ""
-Const BotNick = "Qubick"
-Const UserString = "FreeBASIC"
-Const Description = "Irc bot written in FreeBASIC"
-Const AdminNick = "writed"
-Const Channels = "##freebasic-ru,#s2ch"
-Const MainChannel = "##freebasic-ru"
+#include once "BotConfig.bi"
 
 ' Сообщение с канала
 Function ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)As ResultType
