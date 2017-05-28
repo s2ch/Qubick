@@ -11,19 +11,58 @@ Const IrcServer = "chat.freenode.net"
 Const Port = "6667"
 Const LocalAddress = "0.0.0.0"
 Const LocalPort = ""
-Const Password = ""
-Const BotNick = "Station922_mkv"
+
+Const ServerPassword = ""
+Const BotNick = "Qubick"
 Const UserString = "FreeBASIC"
 Const Description = "Irc bot written in FreeBASIC"
 Const AdminNick = "writed"
-Const Channels = "#s2ch,##freebasic-ru"
-Const MainChannel = "#s2ch"
+Const Channels = "##freebasic-ru,#s2ch"
+Const MainChannel = "##freebasic-ru"
 
-' Что требуется от этого бота?
-' Сидеть на канале
-' Выполнять команды от пользователя на локальном компе
-' Возможно, говорить что‐нибудь в чат
-' Возможность говорить пользователю от имени
+' Сообщение с канала
+Function ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)As ResultType
+	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
+	
+	' Вопросное сообщение
+	If QuestionToChat(eData, Channel, MessageText) Then
+		Return ResultType.None
+	End If
+	
+	' Здесь можно отправлять ответ на сообщение
+	AnswerToChat(eData, Channel, MessageText)
+	
+	' Можно искать ссылки в тексте, чтобы ходить по ним
+	
+	' Если сообщение начинается с ника бота, можно ответить пользователю
+	
+	' Можно среагировать на точку — это пинг
+	
+	' Команда от админа
+	If lstrcmp(User, @AdminNick) = 0 Then
+		ProcessAdminCommand(eData, Channel, MessageText)
+	End If
+	Return ResultType.None
+End Function
+
+' Личное сообщение
+Function IrcPrivateMessage(ByVal AdvData As Any Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)As ResultType
+	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
+	
+	' Вопросное сообщение
+	If QuestionToChat(eData, User, MessageText) Then
+		Return ResultType.None
+	End If
+	
+	' Ответить пользователю в чат
+	AnswerToChat(eData, User, MessageText)
+	
+	' Команда от админа
+	If lstrcmp(User, AdminNick) = 0 Then
+		ProcessAdminCommand(eData, User, MessageText)
+	End If
+	Return ResultType.None
+End Function
 
 ' Отправка сырого сообщения на сервер
 Sub SendedRawMessage(ByVal AdvData As Any Ptr, ByVal MessageText As WString Ptr)
@@ -41,42 +80,6 @@ Function ServerMessage(ByVal AdvData As Any Ptr, ByVal ServerCode As WString Ptr
 		Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
 		' Присоединиться к каналам
 		eData->objClient.JoinChannel(Channels)
-	End If
-	Return ResultType.None
-End Function
-
-' Сообщение с канала
-Function ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)As ResultType
-	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
-	
-	' Здесь можно отправлять ответ на сообщение
-	AnswerToChat(eData, Channel, MessageText)
-	
-	' Можно искать ссылки в тексте, чтобы ходить по ним
-	
-	' Если сообщение начинается с ника бота, можно ответить пользователю
-	
-	' Можно выдать случайную фразу
-	
-	' Можно среагировать на точку — это пинг
-	
-	' Команда от админа
-	If lstrcmp(User, @AdminNick) = 0 Then
-		ProcessAdminCommand(eData, Channel, MessageText)
-	End If
-	Return ResultType.None
-End Function
-
-' Личное сообщение
-Function IrcPrivateMessage(ByVal AdvData As Any Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)As ResultType
-	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
-	
-	' Ответить пользователю в чат
-	AnswerToChat(eData, User, MessageText)
-	
-	' Команда от админа
-	If lstrcmp(User, AdminNick) = 0 Then
-		ProcessAdminCommand(eData, User, MessageText)
 	End If
 	Return ResultType.None
 End Function
@@ -106,18 +109,14 @@ Function Ping(ByVal AdvData As Any Ptr, ByVal Server As WString Ptr)As ResultTyp
 	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
 	
 	' Обязательно отправляем понг как можно быстрее
-	Dim strTemp As WString * (IrcClient.MaxBytesCount + 1) = Any
-	lstrcpy(strTemp, IrcClient.PongStringWithSpace)
-	lstrcat(strTemp, Server)
-	eData->objClient.SendRawMessage(strTemp)
+	Return eData->objClient.SendPong(Server)
 	
-	Return ResultType.None
 End Function
 
 ' Какой‐то пользователь запрашивает наши параметры
 Function CtcpMessage(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByVal UserName As WString Ptr, ByVal MessageType As CtcpMessageType, ByVal Param As WString Ptr)As ResultType
 	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
-	REM ' Сообщение CTCP
+	REM ' Запрос CTCP
 	REM ' VERSION HexChat 2.9.1 [x86] / Windows 8 [1.46GHz]
 	REM ' TIME Fri 23 Nov 2012 19:26:42 EST
 	REM ' PING 23152511
@@ -159,11 +158,11 @@ Function CtcpNotice(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByV
 	Return ResultType.None
 End Function
 
-Sub ServerError(ByVal AdvData As Any Ptr, ByVal Message As WString Ptr)
-	ExitProcess(1)
-End Sub
-
+#ifdef service
 Function ServiceProc(ByVal lpParam As LPVOID)As DWORD
+#else
+Function EntryPoint Alias "EntryPoint"()As Integer
+#endif
 	' Дополнительные данные
 	Dim AdvData As AdvancedData = Any
 	
@@ -191,10 +190,10 @@ Function ServiceProc(ByVal lpParam As LPVOID)As DWORD
 	AdvData.objClient.CtcpMessageEvent = @CtcpMessage
 	AdvData.objClient.CtcpNoticeEvent = @CtcpNotice
 	AdvData.objClient.UserJoinedEvent = @UserJoined
-	AdvData.objClient.ServerErrorEvent = @ServerError
 	
 	' События, которые бот не обрабатывает
 	' необходимо установить в NULL
+	AdvData.objClient.ServerErrorEvent = NULL
 	AdvData.objClient.PingEvent = NULL
 	AdvData.objClient.NoticeEvent = NULL
 	AdvData.objClient.UserLeavedEvent = NULL
@@ -214,7 +213,7 @@ Function ServiceProc(ByVal lpParam As LPVOID)As DWORD
 	
 	Do
 		' Инициализация: сервер порт ник юзер описание
-		If AdvData.objClient.OpenIrc(@IrcServer, @Port, @LocalAddress, @LocalPort, @Password, @BotNick, @UserString, @Description, False) = ResultType.None Then
+		If AdvData.objClient.OpenIrc(@IrcServer, @Port, @LocalAddress, @LocalPort, @ServerPassword, @BotNick, @UserString, @Description, False) = ResultType.None Then
 			' Всё идёт по плану
 			
 			' Получение данных от сервера и разбор данных

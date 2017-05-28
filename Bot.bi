@@ -72,7 +72,11 @@ Const CommandDone = "Команда выполнена"
 Const JuickCommandDone = "Отправляю на жуйкочан"
 
 Const AdminRealName = "Эрик Замабувараев‐Ёмолкуу"
-Const OSVersion = "Bot version 30 written in FreeBASIC / Microsoft Windows Server 2003 R2 Standard x64 Edition Service Pack 2 Intel Xeon CPU 2.20GHz 512 RAM"
+Const OSVersion = "Bot version 35 written in FreeBASIC / Microsoft Windows Server 2003 R2 Standard x64 Edition Service Pack 2 Intel Xeon CPU 2.20GHz 512 RAM"
+
+' Символ пробела
+Const WhiteSpaceChar As Integer = &h0020
+
 
 Declare Function ThreadFunction(ByVal lpParam As LPVOID)As DWORD
 Declare Function EntryPoint Alias "EntryPoint"()As Integer
@@ -107,6 +111,9 @@ Declare Sub ProcessAdminCommand(ByVal eData As AdvancedData Ptr, ByVal User As W
 
 ' Ответить на сообщение
 Declare Sub AnswerToChat(ByVal eData As AdvancedData Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)
+
+' Вопросные сообщениями
+Declare Function QuestionToChat(ByVal eData As AdvancedData Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)As Boolean
 
 Declare Sub GetQuestionList(ByVal eData As AdvancedData Ptr, ByVal User As WString Ptr)
 
