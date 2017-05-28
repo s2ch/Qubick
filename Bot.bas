@@ -199,7 +199,9 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 	GetSystemTime(@dtNow)
 	srand(dtNow.wMilliseconds - dtNow.wSecond + dtNow.wMinute + dtNow.wHour)
 	
+#ifdef service
 	Do
+#endif
 		' Инициализация: сервер порт ник юзер описание
 		If AdvData.objClient.OpenIrc(@IrcServer, @Port, @LocalAddress, @LocalPort, @ServerPassword, @BotNick, @UserString, @Description, False) = ResultType.None Then
 			' Всё идёт по плану
@@ -214,8 +216,10 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 			' Закрыть
 			AdvData.objClient.CloseIrc()
 		End If
+#ifdef service
 		Sleep_(60 * 1000)
 	Loop
+#endif
 	
 	Return 0
 End Function
