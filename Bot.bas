@@ -210,7 +210,9 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 			Dim strReceiveBuffer As WString * (IrcClient.MaxBytesCount + 1) = Any
 			Dim intResult As ResultType = Any
 			Do
-				intResult = AdvData.objClient.ReceiveData(@strReceiveBuffer)
+				If AdvData.objClient.ReceiveData(@strReceiveBuffer) <> ResultType.None Then
+					Exit Do
+				End If
 				intResult = AdvData.objClient.ParseData(@strReceiveBuffer)
 			Loop While intResult = ResultType.None
 			' Закрыть
