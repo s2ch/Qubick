@@ -55,15 +55,15 @@ Function ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, 
 	
 	' Можно среагировать на точку — это пинг
 	
+	' Команды пользователя
+	ProcessUserCommand(eData, Channel, MessageText)
+	
 	' Команда от админа
 	If lstrcmp(User, @AdminNick) = 0 Then
 		If ProcessAdminCommand(eData, Channel, MessageText) Then
 			Return ResultType.None
 		End If
 	End If
-	
-	' Команды пользователя
-	ProcessUserCommand(eData, Channel, MessageText)
 	
 	Return ResultType.None
 End Function
@@ -80,15 +80,15 @@ Function IrcPrivateMessage(ByVal AdvData As Any Ptr, ByVal User As WString Ptr, 
 	' Ответить пользователю в чат
 	AnswerToChat(eData, User, MessageText)
 	
+	' Команды пользователя
+	ProcessUserCommand(eData, User, MessageText)
+	
 	' Команда от админа
 	If lstrcmp(User, AdminNick) = 0 Then
 		If ProcessAdminCommand(eData, User, MessageText) Then
 			Return ResultType.None
 		End If
 	End If
-	
-	' Команды пользователя
-	ProcessUserCommand(eData, User, MessageText)
 	
 	Return ResultType.None
 End Function
