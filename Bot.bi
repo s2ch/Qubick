@@ -8,8 +8,8 @@
 #include once "WriteLine.bi"
 
 ' Константы команд
-Const AllAdminCommands = "справка кит жуйк"
-Const AllUserCommands = "справка кит жуйк ник зайди выйди сгинь тема скажи ну делай память процессы"
+Const AllAdminCommands = "справка покажи жуйк"
+Const AllUserCommands = "справка покажи жуйк ник зайди выйди сгинь тема скажи ну делай память процессы"
 ' Выход из сети
 Const QuitCommand = "!сгинь"
 ' Сменить ник
@@ -36,9 +36,8 @@ Const ProcessInfoCommand = "!память"
 Const ProcessesListCommand = "!процессы"
 ' Вычислить выражение
 Const CalculateCommand = "!считай"
-' Показать синего кита
-Const KitCommand = "!кит"
-Const KitCommand2 = "!синий_кит"
+' Графика ASCII
+Const ASCIICommand = "!покажи"
 
 ' Добавить ключевую фразу для реагирования
 Const AddQuestionCommand = "!вопрос"
@@ -51,6 +50,8 @@ Const AnswerListCommand = "!ответы"
 
 ' Задержка между сообщениями, чтобы не выгнали за флуд
 Const MessageTimeWait As Integer = 3000
+
+Const vbCrLf = !"\r\n"
 
 ' Создать файл, который можно компилировать
 ' Добавить в него текст
