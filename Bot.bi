@@ -8,7 +8,8 @@
 #include once "WriteLine.bi"
 
 ' Константы команд
-Const AllCommand = "ник зайди выйди сгинь тема скажи ну делай справка память процессы"
+Const AllAdminCommands = "справка кит жуйк"
+Const AllUserCommands = "справка кит жуйк ник зайди выйди сгинь тема скажи ну делай память процессы"
 ' Выход из сети
 Const QuitCommand = "!сгинь"
 ' Сменить ник
@@ -35,6 +36,9 @@ Const ProcessInfoCommand = "!память"
 Const ProcessesListCommand = "!процессы"
 ' Вычислить выражение
 Const CalculateCommand = "!считай"
+' Показать синего кита
+Const KitCommand = "!кит"
+Const KitCommand2 = "!синий_кит"
 
 ' Добавить ключевую фразу для реагирования
 Const AddQuestionCommand = "!вопрос"
@@ -71,9 +75,6 @@ Const ClearSourceCommand = "чисть"
 Const CommandDone = "Команда выполнена"
 Const JuickCommandDone = "Отправляю на жуйкочан"
 
-Const AdminRealName = "Эрик Замабувараев‐Ёмолкуу"
-Const OSVersion = "Bot version 35 written in FreeBASIC / Microsoft Windows Server 2003 R2 Standard x64 Edition Service Pack 2 Intel Xeon CPU 2.20GHz 512 RAM"
-
 ' Символ пробела
 Const WhiteSpaceChar As Integer = &h0020
 
@@ -107,7 +108,10 @@ Const MaxPingChatAnswers As Integer = 2048
 Const DataBaseLength As Integer = SizeOf(Integer) + MaxPingChatAnswers * SizeOf(PingChatAnswers) + SizeOf(Integer) + SizeOf(Integer)
 
 ' Обработка команды администратора
-Declare Sub ProcessAdminCommand(ByVal eData As AdvancedData Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)
+Declare Function ProcessAdminCommand(ByVal eData As AdvancedData Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)As Boolean
+
+' Обработка команды пользователя
+Declare Function ProcessUserCommand(ByVal eData As AdvancedData Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)As Boolean
 
 ' Ответить на сообщение
 Declare Sub AnswerToChat(ByVal eData As AdvancedData Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)

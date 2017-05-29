@@ -5,6 +5,18 @@
 
 ## Компиляция
 
+Обычное приложение
+
+```
+fbc -l IRC bot.bas WriteLine.bas ProcessmemoryInfo.bas DateTimeToString.bas ProcessAdminCommand.bas AnswerToChat.bas QuestionToChat.bas ProcessUserCommand.bas
+```
+
+Служба Windows
+
+```
+fbc -d service=true -l IRC bot.bas WriteLine.bas ProcessmemoryInfo.bas DateTimeToString.bas ProcessAdminCommand.bas AnswerToChat.bas Service.bas QuestionToChat.bas ProcessUserCommand.bas
+```
+
 
 ## Команды
 
@@ -91,4 +103,4 @@
 
 ### Показать список ответов
 
-!ответы номер фопроса
+!ответы номер вопроса

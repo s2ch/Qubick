@@ -8,9 +8,38 @@
 #include once "IrcEvents.bi"
 #include once "BotConfig.bi"
 
+Const ColorWhite = "00"
+Const ColorBlack = "01"
+Const ColorBlue = "02"
+Const ColorGreen = "03"
+Const ColorLightRed = "04"
+Const ColorBrown = "05"
+Const ColorPurple = "06"
+Const ColorOrange = "07"
+Const ColorYellow = "08"
+Const ColorLightGreen = "09"
+Const ColorCyan = "10"
+Const ColorLightCyan = "11"
+Const ColorLightBlue = "12"
+Const ColorPink = "13"
+Const ColorGrey = "14"
+Const ColorLightGrey = "15"
+
 ' Сообщение с канала
 Function ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)As ResultType
 	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
+	
+	' Dim strTemp As WString * (IrcClient.MaxBytesCount + 1) = Any
+	
+	' strTemp[0] = 3
+	' lstrcpy(@strTemp[1], ColorWhite)
+	' lstrcpy(@strTemp, "14Мы всегда рады видеть Вас. Приятного общения! :: 14Список команд: 06!хелп :: 14Случайная команда: 06!гугл :: 14Сегодня вы 074014-й посетитель, а за 05489 14дней вы зашли 061 14раз и стали06 2831814-м посетителем канала 05#pikabu14! :: 14Ваша карма: 060 :: 14Включена защита от 04мата14!")
+	' Dim intLen As Integer = lstrlen(@strTemp)
+	' strTemp[intLen] = 3
+	' strTemp[intLen + 1] = 0
+	
+	' eData->objClient.SendIrcMessage(@MainChannel, @strTemp)
+	
 	
 	' Вопросное сообщение
 	If QuestionToChat(eData, Channel, MessageText) Then
@@ -28,8 +57,14 @@ Function ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, 
 	
 	' Команда от админа
 	If lstrcmp(User, @AdminNick) = 0 Then
-		ProcessAdminCommand(eData, Channel, MessageText)
+		If ProcessAdminCommand(eData, Channel, MessageText) Then
+			Return ResultType.None
+		End If
 	End If
+	
+	' Команды пользователя
+	ProcessUserCommand(eData, Channel, MessageText)
+	
 	Return ResultType.None
 End Function
 
@@ -47,8 +82,14 @@ Function IrcPrivateMessage(ByVal AdvData As Any Ptr, ByVal User As WString Ptr, 
 	
 	' Команда от админа
 	If lstrcmp(User, AdminNick) = 0 Then
-		ProcessAdminCommand(eData, User, MessageText)
+		If ProcessAdminCommand(eData, User, MessageText) Then
+			Return ResultType.None
+		End If
 	End If
+	
+	' Команды пользователя
+	ProcessUserCommand(eData, User, MessageText)
+	
 	Return ResultType.None
 End Function
 
