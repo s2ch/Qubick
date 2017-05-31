@@ -59,11 +59,11 @@ Function ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, 
 	ProcessUserCommand(eData, Channel, MessageText)
 	
 	' Команда от админа
-	If lstrcmp(User, @AdminNick) = 0 Then
-		If ProcessAdminCommand(eData, Channel, MessageText) Then
-			Return ResultType.None
-		End If
-	End If
+	' If lstrcmp(User, @AdminNick) = 0 Then
+		' If ProcessAdminCommand(eData, Channel, MessageText) Then
+			' Return ResultType.None
+		' End If
+	' End If
 	
 	Return ResultType.None
 End Function
