@@ -111,7 +111,7 @@ Function ServerMessage(ByVal AdvData As Any Ptr, ByVal ServerCode As WString Ptr
 		Dim strMode As WString * (IrcClient.MaxBytesCount + 1) = Any
 		lstrcpy(@strMode, "MODE ")
 		lstrcat(@strMode, @BotNick)
-		lstrcat(@strMode, "+R")
+		lstrcat(@strMode, " +R")
 		
 		' Присоединиться к каналам
 		eData->objClient.JoinChannel(Channels)
