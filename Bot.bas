@@ -107,8 +107,16 @@ End Sub
 Function ServerMessage(ByVal AdvData As Any Ptr, ByVal ServerCode As WString Ptr, ByVal MessageText As WString Ptr)As ResultType
 	If lstrcmp(ServerCode, @RPL_WELCOME) = 0 Then
 		Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
+		' Режим запрета приёма личных сообщений от незарегистрированных пользователей
+		Dim strMode As WString * (IrcClient.MaxBytesCount + 1) = Any
+		lstrcpy(@strMode, "MODE ")
+		lstrcat(@strMode, @BotNick)
+		lstrcat(@strMode, "+R")
+		
 		' Присоединиться к каналам
 		eData->objClient.JoinChannel(Channels)
+		' Режим
+		eData->objClient.SendRawMessage(@strMode)
 	End If
 	Return ResultType.None
 End Function
