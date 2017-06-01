@@ -239,7 +239,6 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 	AdvData.objClient.QuitEvent = NULL
 	AdvData.objClient.KickEvent = NULL
 	AdvData.objClient.InviteEvent = NULL
-	AdvData.objClient.DisconnectEvent = NULL
 	AdvData.objClient.PongEvent = NULL
 	AdvData.objClient.ModeEvent = NULL
 	
