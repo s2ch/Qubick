@@ -26,7 +26,7 @@ Const ColorGrey = "14"
 Const ColorLightGrey = "15"
 
 ' Сообщение с канала
-Function ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)As ResultType
+Sub ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)
 	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
 	
 	' Dim strTemp As WString * (IrcClient.MaxBytesCount + 1) = Any
@@ -43,7 +43,7 @@ Function ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, 
 	
 	' Вопросное сообщение
 	If QuestionToChat(eData, Channel, MessageText) Then
-		Return ResultType.None
+		Return
 	End If
 	
 	' Здесь можно отправлять ответ на сообщение
@@ -65,16 +65,15 @@ Function ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, 
 		' End If
 	' End If
 	
-	Return ResultType.None
-End Function
+End Sub
 
 ' Личное сообщение
-Function IrcPrivateMessage(ByVal AdvData As Any Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)As ResultType
+Sub IrcPrivateMessage(ByVal AdvData As Any Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)
 	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
 	
 	' Вопросное сообщение
 	If QuestionToChat(eData, User, MessageText) Then
-		Return ResultType.None
+		Return
 	End If
 	
 	' Ответить пользователю в чат
@@ -86,12 +85,11 @@ Function IrcPrivateMessage(ByVal AdvData As Any Ptr, ByVal User As WString Ptr, 
 	' Команда от админа
 	If lstrcmp(User, AdminNick) = 0 Then
 		If ProcessAdminCommand(eData, User, MessageText) Then
-			Return ResultType.None
+			Return
 		End If
 	End If
 	
-	Return ResultType.None
-End Function
+End Sub
 
 ' Отправка сырого сообщения на сервер
 Sub SendedRawMessage(ByVal AdvData As Any Ptr, ByVal MessageText As WString Ptr)
@@ -104,7 +102,7 @@ Sub ReceivedRawMessage(ByVal AdvData As Any Ptr, ByVal MessageText As WString Pt
 End Sub
 
 ' Любое серверное сообщение
-Function ServerMessage(ByVal AdvData As Any Ptr, ByVal ServerCode As WString Ptr, ByVal MessageText As WString Ptr)As ResultType
+Sub ServerMessage(ByVal AdvData As Any Ptr, ByVal ServerCode As WString Ptr, ByVal MessageText As WString Ptr)
 	If lstrcmp(ServerCode, @RPL_WELCOME) = 0 Then
 		Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
 		' Режим запрета приёма личных сообщений от незарегистрированных пользователей
@@ -118,11 +116,10 @@ Function ServerMessage(ByVal AdvData As Any Ptr, ByVal ServerCode As WString Ptr
 		' Режим
 		eData->objClient.SendRawMessage(@strMode)
 	End If
-	Return ResultType.None
-End Function
+End Sub
 
 ' Кто‐то присоединился к каналу
-Function UserJoined(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal UserName As WString Ptr)As ResultType
+Sub UserJoined(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal UserName As WString Ptr)
 	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
 	
 	' Если название канала начинается с двоеточия, то убрать
@@ -138,20 +135,19 @@ Function UserJoined(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVa
 		eData->objClient.SendCtcpMessage(UserName, CtcpMessageType.Version, 0)
 	End If
 	
-	Return ResultType.None
-End Function
+End Sub
 
 ' Эту функцию можно использовать как таймер с интервалом примерно 265 секунд
-Function Ping(ByVal AdvData As Any Ptr, ByVal Server As WString Ptr)As ResultType
+Sub Ping(ByVal AdvData As Any Ptr, ByVal Server As WString Ptr)
 	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
 	
 	' Обязательно отправляем понг как можно быстрее
-	Return eData->objClient.SendPong(Server)
+	eData->objClient.SendPong(Server)
 	
-End Function
+End Sub
 
 ' Какой‐то пользователь запрашивает наши параметры
-Function CtcpMessage(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByVal UserName As WString Ptr, ByVal MessageType As CtcpMessageType, ByVal Param As WString Ptr)As ResultType
+Sub CtcpMessage(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByVal UserName As WString Ptr, ByVal MessageType As CtcpMessageType, ByVal Param As WString Ptr)
 	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
 	REM ' Запрос CTCP
 	REM ' VERSION HexChat 2.9.1 [x86] / Windows 8 [1.46GHz]
@@ -169,11 +165,11 @@ Function CtcpMessage(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, By
 		Case CtcpMessageType.Version
 			lstrcpy(NoticeText, @OSVersion)
 	End Select
-	Return eData->objClient.SendCtcpNotice(FromUser, MessageType, NoticeText)
-End Function
+	eData->objClient.SendCtcpNotice(FromUser, MessageType, NoticeText)
+End Sub
 
 ' Какой‐то пользователь отвечает на запрос о параметрах
-Function CtcpNotice(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByVal UserName As WString Ptr, ByVal MessageType As CtcpMessageType, ByVal MessageText As WString Ptr)As ResultType
+Sub CtcpNotice(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByVal UserName As WString Ptr, ByVal MessageType As CtcpMessageType, ByVal MessageText As WString Ptr)
 	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
 	If lstrcmp(FromUser, UserName) <> 0 Then
 		Select Case MessageType
@@ -192,8 +188,7 @@ Function CtcpNotice(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByV
 				eData->objClient.SendIrcMessage(@MainChannel, @strTemp)
 		End Select
 	End If
-	Return ResultType.None
-End Function
+End Sub
 
 #ifdef service
 Function ServiceProc(ByVal lpParam As LPVOID)As DWORD
