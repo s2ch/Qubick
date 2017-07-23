@@ -15,7 +15,7 @@ BEGIN
 			VALUE "FileVersion", "0.0.2.2\0"
 			VALUE "ProductVersion", "0.0.2.2\0"
 			VALUE "CompanyName", "Sethi Corporation\0"
-			VALUE "FileDescription", "IRC-бот для канала ##freebasic-ru на фриноде\0"
+			VALUE "FileDescription", "IRC-бот для канала #freebasic-ru на фриноде\0"
 			VALUE "InternalName", "bot.exe\0"
 			VALUE "LegalCopyright", "(c) Sethi Corporation. Public Domain.\0"
 			VALUE "LegalTrademarks", "Sethi is a Trademark of Sethi Corporation\0"
