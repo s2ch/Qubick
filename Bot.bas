@@ -154,17 +154,27 @@ Sub CtcpMessage(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByVal U
 	REM ' TIME Fri 23 Nov 2012 19:26:42 EST
 	REM ' PING 23152511
 	Dim NoticeText As WString * (IrcClient.MaxBytesCount + 1) = Any
+	
 	Select Case MessageType
+		
 		Case CtcpMessageType.Ping
 			lstrcpy(NoticeText, Param)
+			
 		Case CtcpMessageType.Time
 			' Получение даты в HTTP ‐формате
 			GetHttpDate(@NoticeText)
+			
 		Case CtcpMessageType.UserInfo
 			lstrcpy(NoticeText, @AdminRealName)
+			
 		Case CtcpMessageType.Version
 			lstrcpy(NoticeText, @OSVersion)
+			
+		Case Else
+			Exit Sub
+			
 	End Select
+	
 	eData->objClient.SendCtcpNotice(FromUser, MessageType, NoticeText)
 End Sub
 
