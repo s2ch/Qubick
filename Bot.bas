@@ -7,6 +7,7 @@
 #include once "IrcReplies.bi"
 #include once "IrcEvents.bi"
 #include once "BotConfig.bi"
+#include once "IntegerToWString.bi"
 
 Const ColorWhite = "00"
 Const ColorBlack = "01"
@@ -168,7 +169,32 @@ Sub CtcpMessage(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByVal U
 			lstrcpy(NoticeText, @AdminRealName)
 			
 		Case CtcpMessageType.Version
-			lstrcpy(NoticeText, @OSVersion)
+			lstrcpy(NoticeText, @BotVersion)
+			
+			Dim osVersion As OsVersionInfoEx
+			osVersion.dwOSVersionInfoSize = SizeOf(OsVersionInfoEx)
+			
+			If GetVersionEx(CPtr(OsVersionInfo Ptr, @osVersion)) <> 0 Then
+				Scope
+					Dim strNumber As WString * 256 = Any
+					itow(osVersion.dwMajorVersion, @strNumber, 10)
+					lstrcat(@NoticeText, @strNumber)
+					lstrcat(@NoticeText, @".")
+				End Scope
+				
+				Scope
+					Dim strNumber As WString * 256 = Any
+					itow(osVersion.dwMinorVersion, @strNumber, 10)
+					lstrcat(@NoticeText, @strNumber)
+					lstrcat(@NoticeText, @".")
+				End Scope
+				
+				Scope
+					Dim strNumber As WString * 256 = Any
+					itow(osVersion.dwBuildNumber, @strNumber, 10)
+					lstrcat(@NoticeText, @strNumber)
+				End Scope
+			End If
 			
 		Case Else
 			Exit Sub
