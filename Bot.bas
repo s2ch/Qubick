@@ -44,7 +44,7 @@ Sub ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal
 	
 	' Вопросное сообщение
 	If QuestionToChat(eData, Channel, MessageText) Then
-		Return
+		Exit Sub
 	End If
 	
 	' Здесь можно отправлять ответ на сообщение
@@ -74,7 +74,7 @@ Sub IrcPrivateMessage(ByVal AdvData As Any Ptr, ByVal User As WString Ptr, ByVal
 	
 	' Вопросное сообщение
 	If QuestionToChat(eData, User, MessageText) Then
-		Return
+		Exit Sub
 	End If
 	
 	' Ответить пользователю в чат
@@ -86,7 +86,7 @@ Sub IrcPrivateMessage(ByVal AdvData As Any Ptr, ByVal User As WString Ptr, ByVal
 	' Команда от админа
 	If lstrcmp(User, AdminNick) = 0 Then
 		If ProcessAdminCommand(eData, User, MessageText) Then
-			Return
+			Exit Sub
 		End If
 	End If
 	
@@ -129,6 +129,10 @@ Sub UserJoined(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal Use
 		wChannel = @Channel[1]
 	Else
 		wChannel = @Channel[0]
+	End If
+	
+	If lstrcmp(@MainChannel, wChannel) <> 0 Then
+		Exit Sub
 	End If
 	
 	' Запросить информацию о клиенте, если это не мы

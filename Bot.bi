@@ -76,10 +76,6 @@ Const ClearSourceCommand = "чисть"
 Const CommandDone = "Команда выполнена"
 Const JuickCommandDone = "Отправляю на жуйкочан"
 
-' Символ пробела
-Const WhiteSpaceChar As Integer = &h0020
-
-
 Declare Function ThreadFunction(ByVal lpParam As LPVOID)As DWORD
 Declare Function EntryPoint Alias "EntryPoint"()As Integer
 
