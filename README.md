@@ -8,13 +8,13 @@
 Обычное приложение
 
 ```
-fbc -l IRC bot.bas WriteLine.bas ProcessmemoryInfo.bas DateTimeToString.bas ProcessAdminCommand.bas AnswerToChat.bas QuestionToChat.bas ProcessUserCommand.bas
+fbc -l IRC bot.bas WriteLine.bas ProcessmemoryInfo.bas DateTimeToString.bas ProcessAdminCommand.bas AnswerToChat.bas QuestionToChat.bas ProcessUserCommand.bas Settings.bas
 ```
 
 Служба Windows
 
 ```
-fbc -d service=true -l IRC bot.bas WriteLine.bas ProcessmemoryInfo.bas DateTimeToString.bas ProcessAdminCommand.bas AnswerToChat.bas Service.bas QuestionToChat.bas ProcessUserCommand.bas
+fbc -d service=true -l IRC bot.bas WriteLine.bas ProcessmemoryInfo.bas DateTimeToString.bas ProcessAdminCommand.bas AnswerToChat.bas Service.bas QuestionToChat.bas ProcessUserCommand.bas Settings.bas
 ```
 
 
@@ -64,6 +64,11 @@ fbc -d service=true -l IRC bot.bas WriteLine.bas ProcessmemoryInfo.bas DateTimeT
 ### Показать список команд
 
 !справка
+
+
+### Установить пароль для NickServ
+
+!пароль пароль
 
 
 ### Отправить фразу на жуйк

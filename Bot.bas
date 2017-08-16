@@ -8,6 +8,7 @@
 #include once "IrcEvents.bi"
 #include once "BotConfig.bi"
 #include once "IntegerToWString.bi"
+#include once "Settings.bi"
 
 Const ColorWhite = "00"
 Const ColorBlack = "01"
@@ -106,16 +107,32 @@ End Sub
 Sub ServerMessage(ByVal AdvData As Any Ptr, ByVal ServerCode As WString Ptr, ByVal MessageText As WString Ptr)
 	If lstrcmp(ServerCode, @RPL_WELCOME) = 0 Then
 		Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
-		' Режим запрета приёма личных сообщений от незарегистрированных пользователей
-		Dim strMode As WString * (IrcClient.MaxBytesCount + 1) = Any
-		lstrcpy(@strMode, "MODE ")
-		lstrcat(@strMode, @BotNick)
-		lstrcat(@strMode, " +R")
+		
+		' Пароль
+		Scope
+			Dim PasswordBuffer As WString * (IrcClient.MaxBytesCount + 1) = Any
+			Dim Result As Integer = GetSettingsValue(@PasswordBuffer, IrcClient.MaxBytesCount, @PasswordKey)
+			If Result <> -1 Then
+				If lstrlen(@PasswordBuffer) > 0 Then
+					Dim Buffer As WString * (IrcClient.MaxBytesCount + 1) = Any
+					lstrcpy(@Buffer, "IDENTIFY ")
+					lstrcat(@Buffer, @PasswordBuffer)
+					eData->objClient.SendIrcMessage(@NickServNick, @Buffer)
+				End If
+			End If
+		End Scope
+		
+		Scope
+			' Режим запрета приёма личных сообщений от незарегистрированных пользователей
+			Dim strMode As WString * (IrcClient.MaxBytesCount + 1) = Any
+			lstrcpy(@strMode, "MODE ")
+			lstrcat(@strMode, @BotNick)
+			lstrcat(@strMode, " +R")
+			eData->objClient.SendRawMessage(@strMode)
+		End Scope
 		
 		' Присоединиться к каналам
 		eData->objClient.JoinChannel(Channels)
-		' Режим
-		eData->objClient.SendRawMessage(@strMode)
 	End If
 End Sub
 

@@ -9,7 +9,7 @@
 
 ' Константы команд
 Const AllAdminCommands = "справка покажи жуйк"
-Const AllUserCommands = "справка покажи жуйк ник зайди выйди сгинь тема скажи ну делай память процессы"
+Const AllUserCommands = "справка покажи жуйк ник зайди выйди сгинь тема скажи ну делай память процессы пароль"
 ' Выход из сети
 Const QuitCommand = "!сгинь"
 ' Сменить ник
@@ -38,6 +38,8 @@ Const ProcessesListCommand = "!процессы"
 Const CalculateCommand = "!считай"
 ' Графика ASCII
 Const ASCIICommand = "!покажи"
+' Пароль для никсерва
+Const PasswordCommand = "!пароль"
 
 ' Добавить ключевую фразу для реагирования
 Const AddQuestionCommand = "!вопрос"
@@ -75,6 +77,11 @@ Const ClearSourceCommand = "чисть"
 ' Команда выполнена
 Const CommandDone = "Команда выполнена"
 Const JuickCommandDone = "Отправляю на жуйкочан"
+
+
+Const NickServNick = "NickServ"
+Const PasswordKey = "NickServPassword"
+
 
 Declare Function ThreadFunction(ByVal lpParam As LPVOID)As DWORD
 Declare Function EntryPoint Alias "EntryPoint"()As Integer
