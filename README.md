@@ -3,22 +3,45 @@
 Написан на фрибейсике. Можно скомпилировать как обычное консольное приложение и как службу Windows. Разрабатывается для канала ##freebasic-ru, тем не менее, его можно использовать и для других каналов и сетей.
 
 
-## Компиляция
-
-Обычное приложение
-
-```
-fbc -l IRC bot.bas WriteLine.bas ProcessmemoryInfo.bas DateTimeToString.bas ProcessAdminCommand.bas AnswerToChat.bas QuestionToChat.bas ProcessUserCommand.bas Settings.bas
-```
-
-Служба Windows
-
-```
-fbc -d service=true -l IRC bot.bas WriteLine.bas ProcessmemoryInfo.bas DateTimeToString.bas ProcessAdminCommand.bas AnswerToChat.bas Service.bas QuestionToChat.bas ProcessUserCommand.bas Settings.bas
-```
+## Команды пользователя
 
 
-## Команды
+### Показать список команд
+
+!справка
+
+
+### Посетовать что‐либо из двух вариантов
+
+Чат, скажи: а или б?
+
+
+### Отправить фразу на жуйк
+
+!жуйк фраза
+
+
+### Установить таймер
+
+!таймер время текст сообщения
+
+
+### Показать ASCII графику
+
+!покажи 
+
+
+### Показать список процессов
+
+!процессы
+
+
+### Показать использование памяти процессом
+
+!память номер_процесса
+
+
+## Команды администратора
 
 
 ### Выход из сети
@@ -61,34 +84,9 @@ fbc -d service=true -l IRC bot.bas WriteLine.bas ProcessmemoryInfo.bas DateTimeT
 !делай команда параметры
 
 
-### Показать список команд
-
-!справка
-
-
 ### Установить пароль для NickServ
 
 !пароль пароль
-
-
-### Отправить фразу на жуйк
-
-!жуйк фраза
-
-
-### Показать список процессов
-
-!процессы
-
-
-### Показать использование памяти процесса
-
-!память номер_процесса
-
-
-### Вычислить выражение
-
-Не реализовано
 
 
 ### Добавить ключевую фразу для реагирования
@@ -109,3 +107,17 @@ fbc -d service=true -l IRC bot.bas WriteLine.bas ProcessmemoryInfo.bas DateTimeT
 ### Показать список ответов
 
 !ответы номер_вопроса
+
+## Компиляция
+
+Обычное приложение
+
+```
+fbc -l IRC bot.bas WriteLine.bas ProcessmemoryInfo.bas DateTimeToString.bas ProcessAdminCommand.bas AnswerToChat.bas QuestionToChat.bas ProcessUserCommand.bas Settings.bas
+```
+
+Служба Windows
+
+```
+fbc -d service=true -l IRC bot.bas WriteLine.bas ProcessmemoryInfo.bas DateTimeToString.bas ProcessAdminCommand.bas AnswerToChat.bas Service.bas QuestionToChat.bas ProcessUserCommand.bas Settings.bas
+```

@@ -58,7 +58,7 @@ Sub ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal
 	' Можно среагировать на точку — это пинг
 	
 	' Команды пользователя
-	ProcessUserCommand(eData, Channel, MessageText)
+	ProcessUserCommand(eData, User, Channel, MessageText)
 	
 	' Команда от админа
 	' If lstrcmp(User, @AdminNick) = 0 Then
@@ -82,11 +82,11 @@ Sub IrcPrivateMessage(ByVal AdvData As Any Ptr, ByVal User As WString Ptr, ByVal
 	AnswerToChat(eData, User, MessageText)
 	
 	' Команды пользователя
-	ProcessUserCommand(eData, User, MessageText)
+	ProcessUserCommand(eData, User, User, MessageText)
 	
 	' Команда от админа
 	If lstrcmp(User, AdminNick) = 0 Then
-		If ProcessAdminCommand(eData, User, MessageText) Then
+		If ProcessAdminCommand(eData, User, User, MessageText) Then
 			Exit Sub
 		End If
 	End If

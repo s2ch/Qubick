@@ -8,8 +8,8 @@
 #include once "WriteLine.bi"
 
 ' Константы команд
-Const AllAdminCommands = "справка покажи жуйк"
-Const AllUserCommands = "справка покажи жуйк ник зайди выйди сгинь тема скажи ну делай память процессы пароль"
+Const AllAdminCommands = "справка покажи жуйк память процессы"
+Const AllUserCommands = "справка покажи жуйк ник зайди выйди сгинь тема скажи ну делай пароль"
 ' Выход из сети
 Const QuitCommand = "!сгинь"
 ' Сменить ник
@@ -40,6 +40,8 @@ Const CalculateCommand = "!считай"
 Const ASCIICommand = "!покажи"
 ' Пароль для никсерва
 Const PasswordCommand = "!пароль"
+' Таймер
+Const TimerCommand = "!таймер"
 
 ' Добавить ключевую фразу для реагирования
 Const AddQuestionCommand = "!вопрос"
@@ -112,10 +114,10 @@ Const MaxPingChatAnswers As Integer = 2048
 Const DataBaseLength As Integer = SizeOf(Integer) + MaxPingChatAnswers * SizeOf(PingChatAnswers) + SizeOf(Integer) + SizeOf(Integer)
 
 ' Обработка команды администратора
-Declare Function ProcessAdminCommand(ByVal eData As AdvancedData Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)As Boolean
+Declare Function ProcessAdminCommand(ByVal eData As AdvancedData Ptr, ByVal User As WString Ptr, ByVal Channel As WString Ptr, ByVal MessageText As WString Ptr)As Boolean
 
 ' Обработка команды пользователя
-Declare Function ProcessUserCommand(ByVal eData As AdvancedData Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)As Boolean
+Declare Function ProcessUserCommand(ByVal eData As AdvancedData Ptr, ByVal User As WString Ptr, ByVal Channel As WString Ptr, ByVal MessageText As WString Ptr)As Boolean
 
 ' Ответить на сообщение
 Declare Sub AnswerToChat(ByVal eData As AdvancedData Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)
