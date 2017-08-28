@@ -14,7 +14,10 @@ Const AllAdminCommands = "справка покажи жуйк ник зайди
 Const HelpCommand =          "!справка"
 Const ASCIICommand =         "!покажи"
 Const JuickCommand =         "!жуйк"
+Const ChatSayTextCommand1 =  "чат, скажи: "
+Const ChatSayTextCommand2 =  "чат, "
 Const StatsCommand =         "!статистика"
+Const PingCommand =          "."
 
 Const QuitCommand =          "!сгинь"
 Const NickCommand =          "!ник"
@@ -45,10 +48,6 @@ Const vbCrLf = !"\r\n"
 ' скомпилировать
 ' вывести результат компиляции в чат
 ' запустить и вывести результат в чат
-
-' Не реализовано
-Const CharCommand = "символ"
-Const PingCommand = "пинг"
 
 ' Добавляет в исходник текст для компиляции
 Const StartSourceCommand = "исходник"
