@@ -8,49 +8,32 @@
 #include once "WriteLine.bi"
 
 ' Константы команд
-Const AllAdminCommands = "справка покажи жуйк память процессы"
-Const AllUserCommands = "справка покажи жуйк ник зайди выйди сгинь тема скажи ну делай пароль"
-' Выход из сети
-Const QuitCommand = "!сгинь"
-' Сменить ник
-Const NickCommand = "!ник"
-' Зайти на канал
-Const JoinCommand = "!зайди"
-' Покинуть канал
-Const PartCommand = "!выйди"
-' Сменить тему
-Const TopicCommand = "!тема"
-' Сказать в чат
-Const SayCommand = "!скажи"
-' Сказать сырую команду
-Const RawCommand = "!ну"
-' Выполнить на сервере файл
-Const ExecuteCommand = "!делай"
-' Показать список команд
-Const HelpCommand = "!справка"
-' Отправить фразу на жуйк
-Const JuickCommand = "!жуйк"
-' Показать использование памяти процесса
-Const ProcessInfoCommand = "!память"
-' Показать список процессов
-Const ProcessesListCommand = "!процессы"
-' Вычислить выражение
-Const CalculateCommand = "!считай"
-' Графика ASCII
-Const ASCIICommand = "!покажи"
-' Пароль для никсерва
-Const PasswordCommand = "!пароль"
-' Таймер
-Const TimerCommand = "!таймер"
+Const AllUserCommands =  "справка покажи жуйк"
+Const AllAdminCommands = "справка покажи жуйк ник зайди выйди сгинь тема скажи ну делай пароль память процессы"
 
-' Добавить ключевую фразу для реагирования
-Const AddQuestionCommand = "!вопрос"
-' Добавить ответ
-Const AddAnswerCommand = "!ответ"
-' Показать список ключевых фраз
-Const QuestionListCommand = "!вопросы"
-' Показать список ответов
-Const AnswerListCommand = "!ответы"
+Const HelpCommand =          "!справка"
+Const ASCIICommand =         "!покажи"
+Const JuickCommand =         "!жуйк"
+Const StatsCommand =         "!статистика"
+
+Const QuitCommand =          "!сгинь"
+Const NickCommand =          "!ник"
+Const JoinCommand =          "!зайди"
+Const PartCommand =          "!выйди"
+Const TopicCommand =         "!тема"
+Const SayCommand =           "!скажи"
+Const RawCommand =           "!ну"
+Const ExecuteCommand =       "!делай"
+Const ProcessInfoCommand =   "!память"
+Const ProcessesListCommand = "!процессы"
+Const CalculateCommand =     "!считай"
+Const PasswordCommand =      "!пароль"
+Const TimerCommand =         "!таймер"
+
+Const AddQuestionCommand =   "!вопрос"
+Const AddAnswerCommand =     "!ответ"
+Const QuestionListCommand =  "!вопросы"
+Const AnswerListCommand =    "!ответы"
 
 ' Задержка между сообщениями, чтобы не выгнали за флуд
 Const MessageTimeWait As Integer = 3000

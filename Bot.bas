@@ -31,6 +31,8 @@ Const ColorLightGrey = "15"
 Sub ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)
 	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
 	
+	IncrementUserWords(Channel, User)
+	
 	' Dim strTemp As WString * (IrcClient.MaxBytesCount + 1) = Any
 	
 	' strTemp[0] = 3
