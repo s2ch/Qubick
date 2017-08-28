@@ -87,6 +87,8 @@ Type AdvancedData
 	Dim OutHandle As Handle
 	Dim ErrorHandle As Handle
 	
+	' Сохранённый канал
+	Dim SavedChannel As WString * (IrcClient.MaxBytesCount + 1)
 End Type
 
 ' Количество фраз в чате по пингу

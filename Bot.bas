@@ -230,14 +230,46 @@ End Sub
 ' Какой‐то пользователь отвечает на запрос о параметрах
 Sub CtcpNotice(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByVal UserName As WString Ptr, ByVal MessageType As CtcpMessageType, ByVal MessageText As WString Ptr)
 	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
+	
 	If lstrcmp(FromUser, UserName) <> 0 Then
+		
 		Select Case MessageType
+			
 			Case CtcpMessageType.Ping
-				'
+				' Получить время
+				Dim UserTime As ULARGE_INTEGER = Any
+				Dim Result As Boolean = StrToInt64Ex(MessageText, STIF_DEFAULT, @UserTime.QuadPart)
+				If Result <> 0 Then
+					If lstrlen(eData->SavedChannel) <> 0 Then
+						' Получить разницу времени
+						Dim dt As SYSTEMTIME = Any
+						GetSystemTime(@dt)
+						Dim ft As FILETIME = Any
+						SystemTimeToFileTime(@dt, @ft)
+						
+						Dim ul As ULARGE_INTEGER = Any
+						ul.LowPart = ft.dwLowDateTime
+						ul.HighPart = ft.dwHighDateTime
+						
+						Dim ulRusult As ULARGE_INTEGER = Any
+						ulRusult.QuadPart = ((ul.QuadPart - UserTime.QuadPart) \ 100) \ 2
+						
+						' Вывести в чат
+						Dim strNumber As WString * (IrcClient.MaxBytesCount + 1) = Any
+						lstrcpy(@strNumber, "Пинг от тебя ")
+						i64tow(ulRusult.QuadPart, @strNumber + lstrlen(strNumber), 10)
+						lstrcat(@strNumber, " микросекунд.")
+						
+						eData->objClient.SendIrcMessage(eData->SavedChannel, @strNumber)
+					End If
+				End If
+				
 			Case CtcpMessageType.Time
 				'
+				
 			Case CtcpMessageType.UserInfo
 				'
+				
 			Case CtcpMessageType.Version
 				' Нужно как‐то отобразить информацию на текущем канале
 				Dim strTemp As WString * (IrcClient.MaxBytesCount + 1)
@@ -245,8 +277,11 @@ Sub CtcpNotice(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByVal Us
 				lstrcat(@strTemp, @" использует ")
 				lstrcat(@strTemp, MessageText)
 				eData->objClient.SendIrcMessage(@MainChannel, @strTemp)
+				
 		End Select
+		
 	End If
+	
 End Sub
 
 #ifdef service
@@ -266,6 +301,7 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 	AdvData.objClient.ExtendedData = @AdvData
 	' Кодировка
 	AdvData.objClient.CodePage = CP_UTF8
+	AdvData.SavedChannel[0] = 0
 	
 	' События
 #ifdef service
@@ -327,3 +363,7 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 	
 	Return 0
 End Function
+
+#if __FB_DEBUG__ <> 0
+End(EntryPoint())
+#endif
