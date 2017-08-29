@@ -31,6 +31,10 @@ Const ColorLightGrey = "15"
 Sub ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)
 	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
 	
+	' Команды пользователя
+	ProcessUserCommand(eData, User, Channel, MessageText)
+	
+	' Добавление статистики
 	IncrementUserWords(Channel, User)
 	
 	' Dim strTemp As WString * (IrcClient.MaxBytesCount + 1) = Any
@@ -57,31 +61,11 @@ Sub ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal
 	
 	' Если сообщение начинается с ника бота, можно ответить пользователю
 	
-	' Можно среагировать на точку — это пинг
-	
-	' Команды пользователя
-	ProcessUserCommand(eData, User, Channel, MessageText)
-	
-	' Команда от админа
-	' If lstrcmp(User, @AdminNick) = 0 Then
-		' If ProcessAdminCommand(eData, Channel, MessageText) Then
-			' Return ResultType.None
-		' End If
-	' End If
-	
 End Sub
 
 ' Личное сообщение
 Sub IrcPrivateMessage(ByVal AdvData As Any Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)
 	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
-	
-	' Вопросное сообщение
-	If QuestionToChat(eData, User, MessageText) Then
-		Exit Sub
-	End If
-	
-	' Ответить пользователю в чат
-	AnswerToChat(eData, User, MessageText)
 	
 	' Команды пользователя
 	ProcessUserCommand(eData, User, User, MessageText)
@@ -92,6 +76,14 @@ Sub IrcPrivateMessage(ByVal AdvData As Any Ptr, ByVal User As WString Ptr, ByVal
 			Exit Sub
 		End If
 	End If
+	
+	' Вопросное сообщение
+	If QuestionToChat(eData, User, MessageText) Then
+		Exit Sub
+	End If
+	
+	' Ответить пользователю в чат
+	AnswerToChat(eData, User, MessageText)
 	
 End Sub
 
@@ -256,7 +248,8 @@ Sub CtcpNotice(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByVal Us
 						
 						' Вывести в чат
 						Dim strNumber As WString * (IrcClient.MaxBytesCount + 1) = Any
-						lstrcpy(@strNumber, "Пинг от тебя ")
+						lstrcpy(@strNumber, eData->SavedUser)
+						lstrcat(@strNumber, ": пинг от тебя ")
 						i64tow(ulRusult.QuadPart, @strNumber + lstrlen(strNumber), 10)
 						lstrcat(@strNumber, " микросекунд.")
 						

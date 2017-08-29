@@ -8,7 +8,8 @@
 #include once "WriteLine.bi"
 
 ' Константы команд
-Const AllUserCommands =  "справка покажи жуйк"
+Const AllUserCommands1 =  "справка покажи жуйк"
+Const AllUserCommands2 =  "Описание можно почитать на сайте https://github.com/zamabuvaraeu/IrcBot/blob/master/README.md"
 Const AllAdminCommands = "справка покажи жуйк ник зайди выйди сгинь тема скажи ну делай пароль память процессы"
 
 Const HelpCommand =          "!справка"
@@ -58,7 +59,6 @@ Const DoSourceCommand = "запускай"
 ' Очищает исходник
 Const ClearSourceCommand = "чисть"
 
-' Команда выполнена
 Const CommandDone = "Команда выполнена"
 Const JuickCommandDone = "Отправляю на жуйкочан"
 
@@ -87,8 +87,8 @@ Type AdvancedData
 	Dim OutHandle As Handle
 	Dim ErrorHandle As Handle
 	
-	' Сохранённый канал
 	Dim SavedChannel As WString * (IrcClient.MaxBytesCount + 1)
+	Dim SavedUser As WString * (IrcClient.MaxBytesCount + 1)
 End Type
 
 ' Количество фраз в чате по пингу
