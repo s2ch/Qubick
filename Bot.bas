@@ -29,10 +29,9 @@ Const ColorLightGrey = "15"
 
 ' Сообщение с канала
 Sub ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)
-	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
 	
 	' Команды пользователя
-	ProcessUserCommand(eData, User, Channel, MessageText)
+	ProcessUserCommand(CPtr(AdvancedData Ptr, AdvData), User, Channel, MessageText)
 	
 	' Добавление статистики
 	IncrementUserWords(Channel, User)
@@ -48,42 +47,36 @@ Sub ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal
 	
 	' eData->objClient.SendIrcMessage(@MainChannel, @strTemp)
 	
-	
 	' Вопросное сообщение
-	If QuestionToChat(eData, Channel, MessageText) Then
+	If QuestionToChat(CPtr(AdvancedData Ptr, AdvData), Channel, MessageText) Then
 		Exit Sub
 	End If
 	
 	' Здесь можно отправлять ответ на сообщение
-	AnswerToChat(eData, Channel, MessageText)
-	
-	' Можно искать ссылки в тексте, чтобы ходить по ним
-	
-	' Если сообщение начинается с ника бота, можно ответить пользователю
+	AnswerToChat(CPtr(AdvancedData Ptr, AdvData), Channel, MessageText)
 	
 End Sub
 
 ' Личное сообщение
 Sub IrcPrivateMessage(ByVal AdvData As Any Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)
-	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
 	
 	' Команды пользователя
-	ProcessUserCommand(eData, User, User, MessageText)
+	ProcessUserCommand(CPtr(AdvancedData Ptr, AdvData), User, User, MessageText)
 	
 	' Команда от админа
-	If lstrcmp(User, AdminNick) = 0 Then
-		If ProcessAdminCommand(eData, User, User, MessageText) Then
+	If lstrcmp(User, AdminNick1) = 0 OrElse lstrcmp(User, AdminNick2) = 0 Then
+		If ProcessAdminCommand(CPtr(AdvancedData Ptr, AdvData), User, User, MessageText) Then
 			Exit Sub
 		End If
 	End If
 	
 	' Вопросное сообщение
-	If QuestionToChat(eData, User, MessageText) Then
+	If QuestionToChat(CPtr(AdvancedData Ptr, AdvData), User, MessageText) Then
 		Exit Sub
 	End If
 	
 	' Ответить пользователю в чат
-	AnswerToChat(eData, User, MessageText)
+	AnswerToChat(CPtr(AdvancedData Ptr, AdvData), User, MessageText)
 	
 End Sub
 

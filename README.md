@@ -1,4 +1,4 @@
-﻿# Бот для канала #freebasic-ru
+﻿# Бот для каналов #freebasic-ru и #s2ch
 
 Написан на фрибейсике. Можно скомпилировать как обычное консольное приложение и как службу Windows. Разрабатывается для канала ##freebasic-ru, тем не менее, его можно использовать и для других каналов и сетей.
 
@@ -188,11 +188,11 @@
 Обычное приложение
 
 ```
-fbc -l IRC bot.bas WriteLine.bas ProcessmemoryInfo.bas DateTimeToString.bas ProcessAdminCommand.bas AnswerToChat.bas QuestionToChat.bas ProcessUserCommand.bas Settings.bas
+fbc -l IRC bot.bas WriteLine.bas ProcessmemoryInfo.bas DateTimeToString.bas ProcessAdminCommand.bas AnswerToChat.bas QuestionToChat.bas ProcessUserCommand.bas Settings.bas StringFunctions.bas
 ```
 
 Служба Windows
 
 ```
-fbc -d service=true -l IRC bot.bas WriteLine.bas ProcessmemoryInfo.bas DateTimeToString.bas ProcessAdminCommand.bas AnswerToChat.bas Service.bas QuestionToChat.bas ProcessUserCommand.bas Settings.bas
+fbc -d service=true -l IRC bot.bas WriteLine.bas ProcessmemoryInfo.bas DateTimeToString.bas ProcessAdminCommand.bas AnswerToChat.bas Service.bas QuestionToChat.bas ProcessUserCommand.bas Settings.bas StringFunctions.bas
 ```
