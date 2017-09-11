@@ -141,7 +141,7 @@ Sub UserJoined(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal Use
 	
 	' Запросить информацию о клиенте, если это не мы
 	If lstrcmp(@BotNick, UserName) <> 0 Then
-		eData->objClient.SendCtcpMessage(UserName, CtcpMessageType.Version, 0)
+		eData->objClient.SendCtcpVersionRequest(UserName)
 	End If
 	
 End Sub
@@ -155,6 +155,7 @@ Sub Ping(ByVal AdvData As Any Ptr, ByVal Server As WString Ptr)
 	
 End Sub
 
+/'
 ' Какой‐то пользователь запрашивает наши параметры
 Sub CtcpMessage(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByVal UserName As WString Ptr, ByVal MessageType As CtcpMessageType, ByVal Param As WString Ptr)
 	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
@@ -211,7 +212,9 @@ Sub CtcpMessage(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByVal U
 	
 	eData->objClient.SendCtcpNotice(FromUser, MessageType, NoticeText)
 End Sub
+'/
 
+/'
 ' Какой‐то пользователь отвечает на запрос о параметрах
 Sub CtcpNotice(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByVal UserName As WString Ptr, ByVal MessageType As CtcpMessageType, ByVal MessageText As WString Ptr)
 	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
@@ -269,6 +272,7 @@ Sub CtcpNotice(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByVal Us
 	End If
 	
 End Sub
+'/
 
 #ifdef service
 Function ServiceProc(ByVal lpParam As LPVOID)As DWORD
@@ -283,9 +287,7 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 	AdvData.OutHandle = GetStdHandle(STD_OUTPUT_HANDLE)
 	AdvData.ErrorHandle = GetStdHandle(STD_ERROR_HANDLE)
 	
-	' Дополнительные данные, передающиеся в каждом событии
-	AdvData.objClient.ExtendedData = @AdvData
-	' Кодировка
+	AdvData.objClient.AdvancedClientData = @AdvData
 	AdvData.objClient.CodePage = CP_UTF8
 	AdvData.SavedChannel[0] = 0
 	
@@ -300,14 +302,11 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 	AdvData.objClient.ServerMessageEvent = @ServerMessage
 	AdvData.objClient.ChannelMessageEvent = @ChannelMessage
 	AdvData.objClient.PrivateMessageEvent = @IrcPrivateMessage
-	AdvData.objClient.CtcpMessageEvent = @CtcpMessage
-	AdvData.objClient.CtcpNoticeEvent = @CtcpNotice
 	AdvData.objClient.UserJoinedEvent = @UserJoined
 	
 	' События, которые бот не обрабатывает
 	' необходимо установить в NULL
 	AdvData.objClient.ServerErrorEvent = NULL
-	AdvData.objClient.PingEvent = NULL
 	AdvData.objClient.NoticeEvent = NULL
 	AdvData.objClient.UserLeavedEvent = NULL
 	AdvData.objClient.NickChangedEvent = NULL
@@ -315,8 +314,19 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 	AdvData.objClient.QuitEvent = NULL
 	AdvData.objClient.KickEvent = NULL
 	AdvData.objClient.InviteEvent = NULL
+	AdvData.objClient.PingEvent = NULL
 	AdvData.objClient.PongEvent = NULL
 	AdvData.objClient.ModeEvent = NULL
+
+	AdvData.objClient.CtcpPingRequestEvent = NULL
+	AdvData.objClient.CtcpTimeRequestEvent = NULL
+	AdvData.objClient.CtcpUserInfoRequestEvent = NULL
+	AdvData.objClient.CtcpVersionRequestEvent = NULL
+	AdvData.objClient.CtcpActionEvent = NULL
+	AdvData.objClient.CtcpPingResponseEvent = NULL
+	AdvData.objClient.CtcpTimeResponseEvent = NULL
+	AdvData.objClient.CtcpUserInfoResponseEvent = NULL
+	AdvData.objClient.CtcpVersionResponseEvent = NULL
 	
 	' Инициализация случайных чисел
 	Dim dtNow As SYSTEMTIME = Any
@@ -326,22 +336,12 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 #ifdef service
 	Do
 #endif
+		Print "Инициализация"
 		' Инициализация: сервер порт ник юзер описание
-		If AdvData.objClient.OpenIrc(@IrcServer, @Port, @LocalAddress, @LocalPort, @ServerPassword, @BotNick, @UserString, @Description, False) = ResultType.None Then
-			' Всё идёт по плану
-			
-			' Получение данных от сервера и разбор данных
-			Dim strReceiveBuffer As WString * (IrcClient.MaxBytesCount + 1) = Any
-			Dim intResult As ResultType = Any
-			Do
-				If AdvData.objClient.ReceiveData(@strReceiveBuffer) <> ResultType.None Then
-					Exit Do
-				End If
-				intResult = AdvData.objClient.ParseData(@strReceiveBuffer)
-			Loop While intResult = ResultType.None
-			' Закрыть
-			AdvData.objClient.CloseIrc()
+		If AdvData.objClient.OpenIrc(@IrcServer, @Port, @BotNick, @UserString, @Description) Then
+			AdvData.objClient.Run()
 		End If
+		AdvData.objClient.CloseIrc()
 #ifdef service
 		Sleep_(60 * 1000)
 	Loop
