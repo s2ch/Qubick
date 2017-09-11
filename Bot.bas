@@ -10,24 +10,6 @@
 #include once "IntegerToWString.bi"
 #include once "Settings.bi"
 
-Const ColorWhite = "00"
-Const ColorBlack = "01"
-Const ColorBlue = "02"
-Const ColorGreen = "03"
-Const ColorLightRed = "04"
-Const ColorBrown = "05"
-Const ColorPurple = "06"
-Const ColorOrange = "07"
-Const ColorYellow = "08"
-Const ColorLightGreen = "09"
-Const ColorCyan = "10"
-Const ColorLightCyan = "11"
-Const ColorLightBlue = "12"
-Const ColorPink = "13"
-Const ColorGrey = "14"
-Const ColorLightGrey = "15"
-
-' Сообщение с канала
 Sub ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)
 	
 	' Команды пользователя
@@ -35,17 +17,6 @@ Sub ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal
 	
 	' Добавление статистики
 	IncrementUserWords(Channel, User)
-	
-	' Dim strTemp As WString * (IrcClient.MaxBytesCount + 1) = Any
-	
-	' strTemp[0] = 3
-	' lstrcpy(@strTemp[1], ColorWhite)
-	' lstrcpy(@strTemp, "14Мы всегда рады видеть Вас. Приятного общения! :: 14Список команд: 06!хелп :: 14Случайная команда: 06!гугл :: 14Сегодня вы 074014-й посетитель, а за 05489 14дней вы зашли 061 14раз и стали06 2831814-м посетителем канала 05#pikabu14! :: 14Ваша карма: 060 :: 14Включена защита от 04мата14!")
-	' Dim intLen As Integer = lstrlen(@strTemp)
-	' strTemp[intLen] = 3
-	' strTemp[intLen + 1] = 0
-	
-	' eData->objClient.SendIrcMessage(@MainChannel, @strTemp)
 	
 	' Вопросное сообщение
 	If QuestionToChat(CPtr(AdvancedData Ptr, AdvData), Channel, MessageText) Then
@@ -57,7 +28,6 @@ Sub ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal
 	
 End Sub
 
-' Личное сообщение
 Sub IrcPrivateMessage(ByVal AdvData As Any Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)
 	
 	' Команды пользователя
@@ -80,17 +50,16 @@ Sub IrcPrivateMessage(ByVal AdvData As Any Ptr, ByVal User As WString Ptr, ByVal
 	
 End Sub
 
-' Отправка сырого сообщения на сервер
+#ifndef service
 Sub SendedRawMessage(ByVal AdvData As Any Ptr, ByVal MessageText As WString Ptr)
 	WriteLine(CPtr(AdvancedData Ptr, AdvData)->OutHandle, MessageText)
 End Sub
 
-' Принятие сырого сообщения от сервера
 Sub ReceivedRawMessage(ByVal AdvData As Any Ptr, ByVal MessageText As WString Ptr)
 	WriteLine(CPtr(AdvancedData Ptr, AdvData)->OutHandle, MessageText)
 End Sub
+#endif
 
-' Любое серверное сообщение
 Sub ServerMessage(ByVal AdvData As Any Ptr, ByVal ServerCode As WString Ptr, ByVal MessageText As WString Ptr)
 	If lstrcmp(ServerCode, @RPL_WELCOME) = 0 Then
 		Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
@@ -123,7 +92,6 @@ Sub ServerMessage(ByVal AdvData As Any Ptr, ByVal ServerCode As WString Ptr, ByV
 	End If
 End Sub
 
-' Кто‐то присоединился к каналу
 Sub UserJoined(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal UserName As WString Ptr)
 	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
 	
@@ -146,7 +114,6 @@ Sub UserJoined(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal Use
 	
 End Sub
 
-' Эту функцию можно использовать как таймер с интервалом примерно 265 секунд
 Sub Ping(ByVal AdvData As Any Ptr, ByVal Server As WString Ptr)
 	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
 	
@@ -155,29 +122,70 @@ Sub Ping(ByVal AdvData As Any Ptr, ByVal Server As WString Ptr)
 	
 End Sub
 
-/'
-' Какой‐то пользователь запрашивает наши параметры
-Sub CtcpMessage(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByVal UserName As WString Ptr, ByVal MessageType As CtcpMessageType, ByVal Param As WString Ptr)
+Sub CtcpPingResponse(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByVal ToUser As WString Ptr, ByVal TimeValue As WString Ptr)
 	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
-	REM ' Запрос CTCP
-	REM ' VERSION HexChat 2.9.1 [x86] / Windows 8 [1.46GHz]
-	REM ' TIME Fri 23 Nov 2012 19:26:42 EST
-	REM ' PING 23152511
-	Dim NoticeText As WString * (IrcClient.MaxBytesCount + 1) = Any
+	If lstrcmp(FromUser, ToUser) <> 0 Then
+		' Получить время
+		Dim UserTime As ULARGE_INTEGER = Any
+		Dim Result As Boolean = StrToInt64Ex(TimeValue, STIF_DEFAULT, @UserTime.QuadPart)
+		If Result <> 0 Then
+			If lstrlen(eData->SavedChannel) <> 0 Then
+				' Получить разницу времени
+				Dim dt As SYSTEMTIME = Any
+				GetSystemTime(@dt)
+				Dim ft As FILETIME = Any
+				SystemTimeToFileTime(@dt, @ft)
+				
+				Dim ul As ULARGE_INTEGER = Any
+				ul.LowPart = ft.dwLowDateTime
+				ul.HighPart = ft.dwHighDateTime
+				
+				Dim ulRusult As ULARGE_INTEGER = Any
+				ulRusult.QuadPart = ((ul.QuadPart - UserTime.QuadPart) \ 100) \ 2
+				
+				' Вывести в чат
+				Dim strNumber As WString * (IrcClient.MaxBytesCount + 1) = Any
+				lstrcpy(@strNumber, eData->SavedUser)
+				lstrcat(@strNumber, ": пинг от тебя ")
+				i64tow(ulRusult.QuadPart, @strNumber + lstrlen(strNumber), 10)
+				lstrcat(@strNumber, " микросекунд.")
+				
+				eData->objClient.SendIrcMessage(eData->SavedChannel, @strNumber)
+			End If
+		End If
+	End If
+End Sub
+
+Sub CtcpVersionResponse(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByVal ToUser As WString Ptr, ByVal Version As WString Ptr)
+	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
+	If lstrcmp(FromUser, ToUser) <> 0 Then
+		' Нужно как‐то отобразить информацию на текущем канале
+		Dim strTemp As WString * (IrcClient.MaxBytesCount + 1)
+		lstrcpy(@strTemp, FromUser)
+		lstrcat(@strTemp, @" использует ")
+		lstrcat(@strTemp, Version)
+		eData->objClient.SendIrcMessage(@MainChannel, @strTemp)
+	End If
+End Sub
+
+#ifdef service
+Function ServiceProc(ByVal lpParam As LPVOID)As DWORD
+#else
+Function EntryPoint Alias "EntryPoint"()As Integer
+#endif
+	' Дополнительные данные
+	Dim AdvData As AdvancedData = Any
 	
-	Select Case MessageType
-		
-		Case CtcpMessageType.Ping
-			lstrcpy(NoticeText, Param)
-			
-		Case CtcpMessageType.Time
-			' Получение даты в HTTP ‐формате
-			GetHttpDate(@NoticeText)
-			
-		Case CtcpMessageType.UserInfo
-			lstrcpy(NoticeText, @AdminRealName)
-			
-		Case CtcpMessageType.Version
+	' Идентификаторы ввода‐вывода
+	AdvData.InHandle = GetStdHandle(STD_INPUT_HANDLE)
+	AdvData.OutHandle = GetStdHandle(STD_OUTPUT_HANDLE)
+	AdvData.ErrorHandle = GetStdHandle(STD_ERROR_HANDLE)
+	
+	AdvData.objClient.AdvancedClientData = @AdvData
+	AdvData.objClient.CodePage = CP_UTF8
+	AdvData.objClient.ClientUserInfo = @AdminRealName
+	
+			Dim NoticeText As WString * (IrcClient.MaxBytesCount + 1) = Any
 			lstrcpy(NoticeText, @BotVersion)
 			
 			Dim osVersion As OsVersionInfoEx
@@ -205,90 +213,7 @@ Sub CtcpMessage(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByVal U
 				End Scope
 			End If
 			
-		Case Else
-			Exit Sub
-			
-	End Select
-	
-	eData->objClient.SendCtcpNotice(FromUser, MessageType, NoticeText)
-End Sub
-'/
-
-/'
-' Какой‐то пользователь отвечает на запрос о параметрах
-Sub CtcpNotice(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, ByVal UserName As WString Ptr, ByVal MessageType As CtcpMessageType, ByVal MessageText As WString Ptr)
-	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
-	
-	If lstrcmp(FromUser, UserName) <> 0 Then
-		
-		Select Case MessageType
-			
-			Case CtcpMessageType.Ping
-				' Получить время
-				Dim UserTime As ULARGE_INTEGER = Any
-				Dim Result As Boolean = StrToInt64Ex(MessageText, STIF_DEFAULT, @UserTime.QuadPart)
-				If Result <> 0 Then
-					If lstrlen(eData->SavedChannel) <> 0 Then
-						' Получить разницу времени
-						Dim dt As SYSTEMTIME = Any
-						GetSystemTime(@dt)
-						Dim ft As FILETIME = Any
-						SystemTimeToFileTime(@dt, @ft)
-						
-						Dim ul As ULARGE_INTEGER = Any
-						ul.LowPart = ft.dwLowDateTime
-						ul.HighPart = ft.dwHighDateTime
-						
-						Dim ulRusult As ULARGE_INTEGER = Any
-						ulRusult.QuadPart = ((ul.QuadPart - UserTime.QuadPart) \ 100) \ 2
-						
-						' Вывести в чат
-						Dim strNumber As WString * (IrcClient.MaxBytesCount + 1) = Any
-						lstrcpy(@strNumber, eData->SavedUser)
-						lstrcat(@strNumber, ": пинг от тебя ")
-						i64tow(ulRusult.QuadPart, @strNumber + lstrlen(strNumber), 10)
-						lstrcat(@strNumber, " микросекунд.")
-						
-						eData->objClient.SendIrcMessage(eData->SavedChannel, @strNumber)
-					End If
-				End If
-				
-			Case CtcpMessageType.Time
-				'
-				
-			Case CtcpMessageType.UserInfo
-				'
-				
-			Case CtcpMessageType.Version
-				' Нужно как‐то отобразить информацию на текущем канале
-				Dim strTemp As WString * (IrcClient.MaxBytesCount + 1)
-				lstrcpy(@strTemp, FromUser)
-				lstrcat(@strTemp, @" использует ")
-				lstrcat(@strTemp, MessageText)
-				eData->objClient.SendIrcMessage(@MainChannel, @strTemp)
-				
-		End Select
-		
-	End If
-	
-End Sub
-'/
-
-#ifdef service
-Function ServiceProc(ByVal lpParam As LPVOID)As DWORD
-#else
-Function EntryPoint Alias "EntryPoint"()As Integer
-#endif
-	' Дополнительные данные
-	Dim AdvData As AdvancedData = Any
-	
-	' Идентификаторы ввода‐вывода
-	AdvData.InHandle = GetStdHandle(STD_INPUT_HANDLE)
-	AdvData.OutHandle = GetStdHandle(STD_OUTPUT_HANDLE)
-	AdvData.ErrorHandle = GetStdHandle(STD_ERROR_HANDLE)
-	
-	AdvData.objClient.AdvancedClientData = @AdvData
-	AdvData.objClient.CodePage = CP_UTF8
+	AdvData.objClient.ClientVersion = @NoticeText
 	AdvData.SavedChannel[0] = 0
 	
 	' События
@@ -323,7 +248,7 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 	AdvData.objClient.CtcpUserInfoRequestEvent = NULL
 	AdvData.objClient.CtcpVersionRequestEvent = NULL
 	AdvData.objClient.CtcpActionEvent = NULL
-	AdvData.objClient.CtcpPingResponseEvent = NULL
+	AdvData.objClient.CtcpPingResponseEvent = @CtcpPingResponse
 	AdvData.objClient.CtcpTimeResponseEvent = NULL
 	AdvData.objClient.CtcpUserInfoResponseEvent = NULL
 	AdvData.objClient.CtcpVersionResponseEvent = NULL
@@ -336,7 +261,6 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 #ifdef service
 	Do
 #endif
-		Print "Инициализация"
 		' Инициализация: сервер порт ник юзер описание
 		If AdvData.objClient.OpenIrc(@IrcServer, @Port, @BotNick, @UserString, @Description) Then
 			AdvData.objClient.Run()
