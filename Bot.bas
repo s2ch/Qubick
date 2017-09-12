@@ -140,14 +140,15 @@ Sub CtcpPingResponse(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, By
 				ul.LowPart = ft.dwLowDateTime
 				ul.HighPart = ft.dwHighDateTime
 				
-				Dim ulRusult As ULARGE_INTEGER = Any
-				ulRusult.QuadPart = ((ul.QuadPart - UserTime.QuadPart) \ 100) \ 2
+				Dim ulRusult As Integer = ul.QuadPart - UserTime.QuadPart
+				ulRusult = ulRusult \ 100
+				ulRusult = ulRusult \ 2
 				
 				' Вывести в чат
 				Dim strNumber As WString * (IrcClient.MaxBytesCount + 1) = Any
 				lstrcpy(@strNumber, eData->SavedUser)
 				lstrcat(@strNumber, ": пинг от тебя ")
-				i64tow(ulRusult.QuadPart, @strNumber + lstrlen(strNumber), 10)
+				itow(ulRusult, @strNumber + lstrlen(strNumber), 10)
 				lstrcat(@strNumber, " микросекунд.")
 				
 				eData->objClient.SendIrcMessage(eData->SavedChannel, @strNumber)
@@ -168,6 +169,35 @@ Sub CtcpVersionResponse(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr,
 	End If
 End Sub
 
+Sub MakeBotVersion(ByVal Version As WString Ptr)
+	lstrcpy(Version, @BotVersion)
+	
+	Dim osVersion As OsVersionInfoEx
+	osVersion.dwOSVersionInfoSize = SizeOf(OsVersionInfoEx)
+	
+	If GetVersionEx(CPtr(OsVersionInfo Ptr, @osVersion)) <> 0 Then
+		Scope
+			Dim strNumber As WString * 256 = Any
+			itow(osVersion.dwMajorVersion, @strNumber, 10)
+			lstrcat(Version, @strNumber)
+			lstrcat(Version, @".")
+		End Scope
+		
+		Scope
+			Dim strNumber As WString * 256 = Any
+			itow(osVersion.dwMinorVersion, @strNumber, 10)
+			lstrcat(Version, @strNumber)
+			lstrcat(Version, @".")
+		End Scope
+		
+		Scope
+			Dim strNumber As WString * 256 = Any
+			itow(osVersion.dwBuildNumber, @strNumber, 10)
+			lstrcat(Version, @strNumber)
+		End Scope
+	End If
+End Sub
+
 #ifdef service
 Function ServiceProc(ByVal lpParam As LPVOID)As DWORD
 #else
@@ -185,38 +215,14 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 	AdvData.objClient.CodePage = CP_UTF8
 	AdvData.objClient.ClientUserInfo = @AdminRealName
 	
-			Dim NoticeText As WString * (IrcClient.MaxBytesCount + 1) = Any
-			lstrcpy(NoticeText, @BotVersion)
-			
-			Dim osVersion As OsVersionInfoEx
-			osVersion.dwOSVersionInfoSize = SizeOf(OsVersionInfoEx)
-			
-			If GetVersionEx(CPtr(OsVersionInfo Ptr, @osVersion)) <> 0 Then
-				Scope
-					Dim strNumber As WString * 256 = Any
-					itow(osVersion.dwMajorVersion, @strNumber, 10)
-					lstrcat(@NoticeText, @strNumber)
-					lstrcat(@NoticeText, @".")
-				End Scope
-				
-				Scope
-					Dim strNumber As WString * 256 = Any
-					itow(osVersion.dwMinorVersion, @strNumber, 10)
-					lstrcat(@NoticeText, @strNumber)
-					lstrcat(@NoticeText, @".")
-				End Scope
-				
-				Scope
-					Dim strNumber As WString * 256 = Any
-					itow(osVersion.dwBuildNumber, @strNumber, 10)
-					lstrcat(@NoticeText, @strNumber)
-				End Scope
-			End If
-			
-	AdvData.objClient.ClientVersion = @NoticeText
+	Dim RealBotVersion As WString * (IrcClient.MaxBytesCount + 1) = Any
+	MakeBotVersion(@RealBotVersion)
+	
+	AdvData.objClient.ClientVersion = @RealBotVersion
 	AdvData.SavedChannel[0] = 0
 	
-	' События
+	' События, которые бот не обрабатывает
+	' необходимо установить в NULL
 #ifdef service
 	AdvData.objClient.SendedRawMessageEvent = NULL
 	AdvData.objClient.ReceivedRawMessageEvent = NULL
@@ -229,8 +235,6 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 	AdvData.objClient.PrivateMessageEvent = @IrcPrivateMessage
 	AdvData.objClient.UserJoinedEvent = @UserJoined
 	
-	' События, которые бот не обрабатывает
-	' необходимо установить в NULL
 	AdvData.objClient.ServerErrorEvent = NULL
 	AdvData.objClient.NoticeEvent = NULL
 	AdvData.objClient.UserLeavedEvent = NULL
@@ -251,7 +255,7 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 	AdvData.objClient.CtcpPingResponseEvent = @CtcpPingResponse
 	AdvData.objClient.CtcpTimeResponseEvent = NULL
 	AdvData.objClient.CtcpUserInfoResponseEvent = NULL
-	AdvData.objClient.CtcpVersionResponseEvent = NULL
+	AdvData.objClient.CtcpVersionResponseEvent = @CtcpVersionResponse
 	
 	' Инициализация случайных чисел
 	Dim dtNow As SYSTEMTIME = Any
