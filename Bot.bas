@@ -19,12 +19,12 @@ Sub ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal
 	IncrementUserWords(Channel, User)
 	
 	' Вопросное сообщение
-	If QuestionToChat(CPtr(AdvancedData Ptr, AdvData), Channel, MessageText) Then
-		Exit Sub
-	End If
+	' If QuestionToChat(CPtr(AdvancedData Ptr, AdvData), Channel, MessageText) Then
+		' Exit Sub
+	' End If
 	
 	' Здесь можно отправлять ответ на сообщение
-	AnswerToChat(CPtr(AdvancedData Ptr, AdvData), Channel, MessageText)
+	' AnswerToChat(CPtr(AdvancedData Ptr, AdvData), Channel, MessageText)
 	
 End Sub
 
