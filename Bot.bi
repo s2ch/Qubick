@@ -8,9 +8,9 @@
 #include once "WriteLine.bi"
 
 ' Константы команд
-Const AllUserCommands1 =  "справка покажи жуйк"
+Const AllUserCommands1 =  "справка покажи жуйк . кто"
 Const AllUserCommands2 =  "Описание можно почитать на сайте https://github.com/zamabuvaraeu/IrcBot/blob/master/README.md"
-Const AllAdminCommands = "справка покажи жуйк ник зайди выйди сгинь тема скажи ну делай пароль память процессы"
+Const AllAdminCommands = "справка покажи жуйк . кто ник зайди выйди сгинь тема скажи ну делай пароль память процессы"
 
 Const HelpCommand =          "!справка"
 Const ASCIICommand =         "!покажи"
@@ -19,6 +19,7 @@ Const ChatSayTextCommand1 =  "чат, скажи: "
 Const ChatSayTextCommand2 =  "чат, "
 Const StatsCommand =         "!статистика"
 Const PingCommand =          "."
+Const UserWhoIsCommand =     "!кто"
 
 Const QuitCommand =          "!сгинь"
 Const NickCommand =          "!ник"
@@ -89,6 +90,8 @@ Type AdvancedData
 	
 	Dim SavedChannel As WString * (IrcClient.MaxBytesCount + 1)
 	Dim SavedUser As WString * (IrcClient.MaxBytesCount + 1)
+	
+	Dim AdminAuthenticated As Boolean
 End Type
 
 ' Количество фраз в чате по пингу

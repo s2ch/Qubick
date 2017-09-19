@@ -12,40 +12,38 @@
 
 Sub ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)
 	
-	' Команды пользователя
-	ProcessUserCommand(CPtr(AdvancedData Ptr, AdvData), User, Channel, MessageText)
+	If ProcessAdminCommand(CPtr(AdvancedData Ptr, AdvData), User, User, MessageText) Then
+		Exit Sub
+	End If
 	
-	' Добавление статистики
+	If ProcessUserCommand(CPtr(AdvancedData Ptr, AdvData), User, Channel, MessageText) Then
+		Exit Sub
+	End If
+	
 	IncrementUserWords(Channel, User)
 	
-	' Вопросное сообщение
-	' If QuestionToChat(CPtr(AdvancedData Ptr, AdvData), Channel, MessageText) Then
-		' Exit Sub
-	' End If
+	If QuestionToChat(CPtr(AdvancedData Ptr, AdvData), Channel, MessageText) Then
+		Exit Sub
+	End If
 	
-	' Здесь можно отправлять ответ на сообщение
-	' AnswerToChat(CPtr(AdvancedData Ptr, AdvData), Channel, MessageText)
+	AnswerToChat(CPtr(AdvancedData Ptr, AdvData), Channel, MessageText)
 	
 End Sub
 
 Sub IrcPrivateMessage(ByVal AdvData As Any Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)
 	
-	' Команды пользователя
-	ProcessUserCommand(CPtr(AdvancedData Ptr, AdvData), User, User, MessageText)
-	
-	' Команда от админа
-	If lstrcmp(User, AdminNick1) = 0 OrElse lstrcmp(User, AdminNick2) = 0 Then
-		If ProcessAdminCommand(CPtr(AdvancedData Ptr, AdvData), User, User, MessageText) Then
-			Exit Sub
-		End If
+	If ProcessAdminCommand(CPtr(AdvancedData Ptr, AdvData), User, User, MessageText) Then
+		Exit Sub
 	End If
 	
-	' Вопросное сообщение
+	If ProcessUserCommand(CPtr(AdvancedData Ptr, AdvData), User, User, MessageText) Then
+		Exit Sub
+	End If
+	
 	If QuestionToChat(CPtr(AdvancedData Ptr, AdvData), User, MessageText) Then
 		Exit Sub
 	End If
 	
-	' Ответить пользователю в чат
 	AnswerToChat(CPtr(AdvancedData Ptr, AdvData), User, MessageText)
 	
 End Sub
@@ -61,9 +59,8 @@ End Sub
 #endif
 
 Sub ServerMessage(ByVal AdvData As Any Ptr, ByVal ServerCode As WString Ptr, ByVal MessageText As WString Ptr)
+	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
 	If lstrcmp(ServerCode, @RPL_WELCOME) = 0 Then
-		Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
-		
 		' Пароль
 		Scope
 			Dim PasswordBuffer As WString * (IrcClient.MaxBytesCount + 1) = Any
@@ -78,17 +75,28 @@ Sub ServerMessage(ByVal AdvData As Any Ptr, ByVal ServerCode As WString Ptr, ByV
 			End If
 		End Scope
 		
-		Scope
-			' Режим запрета приёма личных сообщений от незарегистрированных пользователей
-			Dim strMode As WString * (IrcClient.MaxBytesCount + 1) = Any
-			lstrcpy(@strMode, "MODE ")
-			lstrcat(@strMode, @BotNick)
-			lstrcat(@strMode, " +R")
-			eData->objClient.SendRawMessage(@strMode)
-		End Scope
-		
 		' Присоединиться к каналам
 		eData->objClient.JoinChannel(Channels)
+		
+		Exit Sub
+	End If
+	
+	If lstrcmp(ServerCode, @RPL_WHOISLOGGEDAS) = 0 Then
+		':orwell.freenode.net 330 Station922_mkv PERDOLIKS writed :is logged in as
+		' Кому, кто, аккуант, флаг залогиненности
+		Dim WordsCount As Long = Any
+		Dim Lines As WString Ptr Ptr = CommandLineToArgvW(MessageText, @WordsCount)
+		
+		If WordsCount > 4 Then
+			If lstrcmp(Lines[0], AdminNick1) = 0 OrElse lstrcmp(Lines[0], AdminNick2) = 0 Then
+				If StrStr(MessageText, ":is logged in as") <> 0 Then
+					eData->AdminAuthenticated = True
+				End If
+			End If
+		End If
+		
+		LocalFree(Lines)
+		Exit Sub
 	End If
 End Sub
 
@@ -112,6 +120,13 @@ Sub UserJoined(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal Use
 		eData->objClient.SendCtcpVersionRequest(UserName)
 	End If
 	
+End Sub
+
+Sub UserQuit(ByVal AdvData As Any Ptr, ByVal UserName As WString Ptr, ByVal MessageText As WString Ptr)
+	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
+	If lstrcmp(UserName, AdminNick1) = 0 OrElse lstrcmp(UserName, AdminNick2) = 0 Then
+		eData->AdminAuthenticated = False
+	End If
 End Sub
 
 Sub Ping(ByVal AdvData As Any Ptr, ByVal Server As WString Ptr)
@@ -221,11 +236,13 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 	AdvData.objClient.ClientVersion = @RealBotVersion
 	AdvData.SavedChannel[0] = 0
 	
+	AdvData.AdminAuthenticated = False
+	
 	' События, которые бот не обрабатывает
-	' необходимо установить в NULL
+	' необходимо установить в 0
 #ifdef service
-	AdvData.objClient.SendedRawMessageEvent = NULL
-	AdvData.objClient.ReceivedRawMessageEvent = NULL
+	AdvData.objClient.SendedRawMessageEvent = 0
+	AdvData.objClient.ReceivedRawMessageEvent = 0
 #else
 	AdvData.objClient.SendedRawMessageEvent = @SendedRawMessage
 	AdvData.objClient.ReceivedRawMessageEvent = @ReceivedRawMessage
@@ -235,26 +252,26 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 	AdvData.objClient.PrivateMessageEvent = @IrcPrivateMessage
 	AdvData.objClient.UserJoinedEvent = @UserJoined
 	
-	AdvData.objClient.ServerErrorEvent = NULL
-	AdvData.objClient.NoticeEvent = NULL
-	AdvData.objClient.UserLeavedEvent = NULL
-	AdvData.objClient.NickChangedEvent = NULL
-	AdvData.objClient.TopicEvent = NULL
-	AdvData.objClient.QuitEvent = NULL
-	AdvData.objClient.KickEvent = NULL
-	AdvData.objClient.InviteEvent = NULL
-	AdvData.objClient.PingEvent = NULL
-	AdvData.objClient.PongEvent = NULL
-	AdvData.objClient.ModeEvent = NULL
+	AdvData.objClient.ServerErrorEvent = 0
+	AdvData.objClient.NoticeEvent = 0
+	AdvData.objClient.UserLeavedEvent = 0
+	AdvData.objClient.NickChangedEvent = 0
+	AdvData.objClient.TopicEvent = 0
+	AdvData.objClient.QuitEvent = @UserQuit
+	AdvData.objClient.KickEvent = 0
+	AdvData.objClient.InviteEvent = 0
+	AdvData.objClient.PingEvent = 0
+	AdvData.objClient.PongEvent = 0
+	AdvData.objClient.ModeEvent = 0
 
-	AdvData.objClient.CtcpPingRequestEvent = NULL
-	AdvData.objClient.CtcpTimeRequestEvent = NULL
-	AdvData.objClient.CtcpUserInfoRequestEvent = NULL
-	AdvData.objClient.CtcpVersionRequestEvent = NULL
-	AdvData.objClient.CtcpActionEvent = NULL
+	AdvData.objClient.CtcpPingRequestEvent = 0
+	AdvData.objClient.CtcpTimeRequestEvent = 0
+	AdvData.objClient.CtcpUserInfoRequestEvent = 0
+	AdvData.objClient.CtcpVersionRequestEvent = 0
+	AdvData.objClient.CtcpActionEvent = 0
 	AdvData.objClient.CtcpPingResponseEvent = @CtcpPingResponse
-	AdvData.objClient.CtcpTimeResponseEvent = NULL
-	AdvData.objClient.CtcpUserInfoResponseEvent = NULL
+	AdvData.objClient.CtcpTimeResponseEvent = 0
+	AdvData.objClient.CtcpUserInfoResponseEvent = 0
 	AdvData.objClient.CtcpVersionResponseEvent = @CtcpVersionResponse
 	
 	' Инициализация случайных чисел
