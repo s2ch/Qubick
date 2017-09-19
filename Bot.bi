@@ -8,9 +8,9 @@
 #include once "WriteLine.bi"
 
 ' Константы команд
-Const AllUserCommands1 =  "справка покажи жуйк . кто"
+Const AllUserCommands1 =  "справка покажи жуйк . статистика кто"
 Const AllUserCommands2 =  "Описание можно почитать на сайте https://github.com/zamabuvaraeu/IrcBot/blob/master/README.md"
-Const AllAdminCommands = "справка покажи жуйк . кто ник зайди выйди сгинь тема скажи ну делай пароль память процессы"
+Const AllAdminCommands = "справка покажи жуйк . статистика кто ник зайди выйди сгинь тема скажи ну делай пароль память процессы"
 
 Const HelpCommand =          "!справка"
 Const ASCIICommand =         "!покажи"

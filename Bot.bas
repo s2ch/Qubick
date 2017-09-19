@@ -9,8 +9,11 @@
 #include once "BotConfig.bi"
 #include once "IntegerToWString.bi"
 #include once "Settings.bi"
+#include once "CharConstants.bi"
 
 Sub ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)
+	
+	IncrementUserWords(Channel, User)
 	
 	If ProcessAdminCommand(CPtr(AdvancedData Ptr, AdvData), User, Channel, MessageText) Then
 		Exit Sub
@@ -19,8 +22,6 @@ Sub ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal
 	If ProcessUserCommand(CPtr(AdvancedData Ptr, AdvData), User, Channel, MessageText) Then
 		Exit Sub
 	End If
-	
-	IncrementUserWords(Channel, User)
 	
 	If QuestionToChat(CPtr(AdvancedData Ptr, AdvData), Channel, MessageText) Then
 		Exit Sub
@@ -75,7 +76,6 @@ Sub ServerMessage(ByVal AdvData As Any Ptr, ByVal ServerCode As WString Ptr, ByV
 			End If
 		End Scope
 		
-		' Присоединиться к каналам
 		eData->objClient.JoinChannel(Channels)
 		
 		Exit Sub
@@ -103,9 +103,9 @@ End Sub
 Sub UserJoined(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal UserName As WString Ptr)
 	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
 	
-	' Если название канала начинается с двоеточия, то убрать
+	' Убрать двоеточие
 	Dim wChannel As WString Ptr = Any
-	If Channel[0] = 58 Then
+	If Channel[0] = ColonChar Then
 		wChannel = @Channel[1]
 	Else
 		wChannel = @Channel[0]
