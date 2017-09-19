@@ -12,7 +12,7 @@
 
 Sub ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)
 	
-	If ProcessAdminCommand(CPtr(AdvancedData Ptr, AdvData), User, User, MessageText) Then
+	If ProcessAdminCommand(CPtr(AdvancedData Ptr, AdvData), User, Channel, MessageText) Then
 		Exit Sub
 	End If
 	
