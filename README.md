@@ -104,23 +104,6 @@
 ## Команды доступные администратору
 
 
-### Показать список процессов
-
-```
-!процессы
-```
-
-В ответ бот покажет список выполняющихся в системе процессов и их идентификаторов. Не рекомендуется использовать.
-
-### Показать использование памяти процессом
-
-```
-!память [номер процесса]
-```
-
-В ответ бот покажет используемую процессом память. Если номер процесса не указан, то будет показано использование памяти операционной системой.
-
-
 ### Выход из сети
 
 ```
@@ -172,7 +155,7 @@
 ### Выполнить на сервере файл
 
 ```
-!делай <команда или исполняемый файл> <параметры>
+!делай <исполняемый файл> <параметры>
 ```
 
 
@@ -215,11 +198,11 @@
 Обычное приложение
 
 ```
-fbc -l IRC bot.bas WriteLine.bas ProcessmemoryInfo.bas DateTimeToString.bas ProcessAdminCommand.bas AnswerToChat.bas QuestionToChat.bas ProcessUserCommand.bas Settings.bas StringFunctions.bas
+fbc -l IRC bot.bas WriteLine.bas DateTimeToString.bas ProcessAdminCommand.bas AnswerToChat.bas QuestionToChat.bas ProcessUserCommand.bas Settings.bas StringFunctions.bas
 ```
 
 Служба Windows
 
 ```
-fbc -d service=true -l IRC bot.bas WriteLine.bas ProcessmemoryInfo.bas DateTimeToString.bas ProcessAdminCommand.bas AnswerToChat.bas Service.bas QuestionToChat.bas ProcessUserCommand.bas Settings.bas StringFunctions.bas
+fbc -d service=true -l IRC bot.bas WriteLine.bas DateTimeToString.bas ProcessAdminCommand.bas AnswerToChat.bas Service.bas QuestionToChat.bas ProcessUserCommand.bas Settings.bas StringFunctions.bas
 ```

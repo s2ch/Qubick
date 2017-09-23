@@ -31,24 +31,6 @@ Sub ChannelMessage(ByVal AdvData As Any Ptr, ByVal Channel As WString Ptr, ByVal
 	
 End Sub
 
-Sub IrcPrivateMessage(ByVal AdvData As Any Ptr, ByVal User As WString Ptr, ByVal MessageText As WString Ptr)
-	
-	If ProcessAdminCommand(CPtr(AdvancedData Ptr, AdvData), User, User, MessageText) Then
-		Exit Sub
-	End If
-	
-	If ProcessUserCommand(CPtr(AdvancedData Ptr, AdvData), User, User, MessageText) Then
-		Exit Sub
-	End If
-	
-	If QuestionToChat(CPtr(AdvancedData Ptr, AdvData), User, MessageText) Then
-		Exit Sub
-	End If
-	
-	AnswerToChat(CPtr(AdvancedData Ptr, AdvData), User, MessageText)
-	
-End Sub
-
 #ifndef service
 Sub SendedRawMessage(ByVal AdvData As Any Ptr, ByVal MessageText As WString Ptr)
 	WriteLine(CPtr(AdvancedData Ptr, AdvData)->OutHandle, MessageText)
@@ -162,10 +144,11 @@ Sub CtcpPingResponse(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, By
 				' Вывести в чат
 				Dim strNumber As WString * (IrcClient.MaxBytesCount + 1) = Any
 				lstrcpy(@strNumber, eData->SavedUser)
-				lstrcat(@strNumber, ": пинг от тебя ")
+				lstrcat(@strNumber, ": ping from you ")
 				itow(ulRusult, @strNumber + lstrlen(strNumber), 10)
-				lstrcat(@strNumber, " микросекунд.")
+				lstrcat(@strNumber, " microseconds.")
 				
+				IncrementUserWords(eData->SavedChannel, @BotNick)
 				eData->objClient.SendIrcMessage(eData->SavedChannel, @strNumber)
 			End If
 		End If
@@ -178,8 +161,9 @@ Sub CtcpVersionResponse(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr,
 		' Нужно как‐то отобразить информацию на текущем канале
 		Dim strTemp As WString * (IrcClient.MaxBytesCount + 1)
 		lstrcpy(@strTemp, FromUser)
-		lstrcat(@strTemp, @" использует ")
+		lstrcat(@strTemp, @" is using ")
 		lstrcat(@strTemp, Version)
+		IncrementUserWords(@MainChannel, @BotNick)
 		eData->objClient.SendIrcMessage(@MainChannel, @strTemp)
 	End If
 End Sub
@@ -249,7 +233,7 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 #endif
 	AdvData.objClient.ServerMessageEvent = @ServerMessage
 	AdvData.objClient.ChannelMessageEvent = @ChannelMessage
-	AdvData.objClient.PrivateMessageEvent = @IrcPrivateMessage
+	AdvData.objClient.PrivateMessageEvent = 0
 	AdvData.objClient.UserJoinedEvent = @UserJoined
 	
 	AdvData.objClient.ServerErrorEvent = 0

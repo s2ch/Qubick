@@ -8,65 +8,47 @@
 #include once "WriteLine.bi"
 
 ' Константы команд
-Const AllUserCommands1 =  "справка покажи жуйк . статистика кто з"
-Const AllUserCommands2 =  "Описание можно почитать на сайте https://github.com/zamabuvaraeu/IrcBot/blob/master/README.md"
-Const AllAdminCommands = "справка покажи жуйк . статистика кто з ник зайди выйди сгинь тема скажи ну делай пароль память процессы"
+Const AllUserCommands1 = "справка покажи жуйк . статистика кто з"
+Const AllUserCommands2 = "Описание можно почитать на сайте https://github.com/zamabuvaraeu/IrcBot/blob/master/README.md"
+Const AllAdminCommands = "справка покажи жуйк . статистика кто з ник зайди выйди сгинь тема скажи ну пароль делай"
 
-Const HelpCommand =          "!справка"
-Const ASCIICommand =         "!покажи"
-Const JuickCommand =         "!жуйк"
-Const ChatSayTextCommand1 =  "чат, скажи: "
-Const ChatSayTextCommand2 =  "чат, "
-Const StatsCommand =         "!статистика"
-Const PingCommand =          "."
-Const UserWhoIsCommand =     "!кто"
+Const HelpCommand =         "!справка"
+Const ASCIICommand =        "!покажи"
+Const JuickCommand =        "!жуйк"
+Const ChatSayTextCommand1 = "чат, скажи: "
+Const ChatSayTextCommand2 = "чат, "
+Const StatsCommand =        "!статистика"
+Const PingCommand =         "."
+Const UserWhoIsCommand =    "!кто"
+Const FenceCommand =        "!з"
 
-Const QuitCommand =          "!сгинь"
-Const NickCommand =          "!ник"
-Const JoinCommand =          "!зайди"
-Const PartCommand =          "!выйди"
-Const TopicCommand =         "!тема"
-Const SayCommand =           "!скажи"
-Const RawCommand =           "!ну"
-Const ExecuteCommand =       "!делай"
-Const ProcessInfoCommand =   "!память"
-Const ProcessesListCommand = "!процессы"
-Const CalculateCommand =     "!считай"
-Const PasswordCommand =      "!пароль"
-Const TimerCommand =         "!таймер"
+Const QuitCommand =         "!сгинь"
+Const NickCommand =         "!ник"
+Const JoinCommand =         "!зайди"
+Const PartCommand =         "!выйди"
+Const TopicCommand =        "!тема"
+Const SayCommand =          "!скажи"
+Const RawCommand =          "!ну"
+Const ExecuteCommand =      "!делай"
+Const CalculateCommand =    "!считай"
+Const PasswordCommand =     "!пароль"
+Const TimerCommand =        "!таймер"
 
-Const AddQuestionCommand =   "!вопрос"
-Const AddAnswerCommand =     "!ответ"
-Const QuestionListCommand =  "!вопросы"
-Const AnswerListCommand =    "!ответы"
+Const AddQuestionCommand =  "!вопрос"
+Const AddAnswerCommand =    "!ответ"
+Const QuestionListCommand = "!вопросы"
+Const AnswerListCommand =   "!ответы"
 
 ' Задержка между сообщениями, чтобы не выгнали за флуд
 Const MessageTimeWait As Integer = 3000
 
 Const vbCrLf = !"\r\n"
 
-' Создать файл, который можно компилировать
-' Добавить в него текст
-' скомпилировать
-' вывести результат компиляции в чат
-' запустить и вывести результат в чат
-
-' Добавляет в исходник текст для компиляции
-Const StartSourceCommand = "исходник"
-' Компилирует исходник и выводит результат в чат
-Const EndSourceCommand = "компилируй"
-' Запускает исходник и выводит результат в чат
-Const DoSourceCommand = "запускай"
-' Очищает исходник
-Const ClearSourceCommand = "чисть"
-
 Const CommandDone = "Команда выполнена"
 Const JuickCommandDone = "Отправляю на жуйкочан"
 
-
 Const NickServNick = "NickServ"
 Const PasswordKey = "NickServPassword"
-
 
 Declare Function ThreadFunction(ByVal lpParam As LPVOID)As DWORD
 Declare Function EntryPoint Alias "EntryPoint"()As Integer
