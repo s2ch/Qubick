@@ -9,7 +9,7 @@
 
 ' Константы команд
 Const AllUserCommands1 = "справка покажи жуйк . статистика кто з"
-Const AllUserCommands2 = "Описание можно почитать на сайте https://github.com/zamabuvaraeu/IrcBot/blob/master/README.md"
+Const AllUserCommands2 = "Описание можно почитать на сайте https://github.com/BatchedFiles/Qubick/blob/master/README.md"
 Const AllAdminCommands = "справка покажи жуйк . статистика кто з ник зайди выйди сгинь тема скажи ну пароль делай"
 
 Const HelpCommand =         "!справка"

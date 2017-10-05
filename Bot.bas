@@ -235,7 +235,6 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 	AdvData.objClient.ChannelMessageEvent = @ChannelMessage
 	AdvData.objClient.PrivateMessageEvent = 0
 	AdvData.objClient.UserJoinedEvent = @UserJoined
-	
 	AdvData.objClient.ServerErrorEvent = 0
 	AdvData.objClient.NoticeEvent = 0
 	AdvData.objClient.UserLeavedEvent = 0
@@ -247,7 +246,6 @@ Function EntryPoint Alias "EntryPoint"()As Integer
 	AdvData.objClient.PingEvent = 0
 	AdvData.objClient.PongEvent = 0
 	AdvData.objClient.ModeEvent = 0
-
 	AdvData.objClient.CtcpPingRequestEvent = 0
 	AdvData.objClient.CtcpTimeRequestEvent = 0
 	AdvData.objClient.CtcpUserInfoRequestEvent = 0
