@@ -123,10 +123,10 @@ Sub CtcpPingResponse(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, By
 	Dim eData As AdvancedData Ptr = CPtr(AdvancedData Ptr, AdvData)
 	If lstrcmp(FromUser, ToUser) <> 0 Then
 		' Получить время
-		Dim UserTime As ULARGE_INTEGER = Any
-		Dim Result As Boolean = StrToInt64Ex(TimeValue, STIF_DEFAULT, @UserTime.QuadPart)
-		If Result <> 0 Then
-			If lstrlen(eData->SavedChannel) <> 0 Then
+		If lstrlen(eData->SavedChannel) <> 0 Then
+			Dim UserTime As ULARGE_INTEGER = Any
+			Dim Result As Boolean = StrToInt64Ex(TimeValue, STIF_DEFAULT, @UserTime.QuadPart)
+			If Result <> 0 Then
 				' Получить разницу времени
 				Dim dt As SYSTEMTIME = Any
 				GetSystemTime(@dt)
@@ -150,6 +150,7 @@ Sub CtcpPingResponse(ByVal AdvData As Any Ptr, ByVal FromUser As WString Ptr, By
 				
 				IncrementUserWords(eData->SavedChannel, @BotNick)
 				eData->objClient.SendIrcMessage(eData->SavedChannel, @strNumber)
+				eData->SavedChannel[0] = 0
 			End If
 		End If
 	End If
