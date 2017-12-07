@@ -12,7 +12,9 @@ Const AllUserCommands1 = "справка покажи жуйк . статист�
 Const AllUserCommands2 = "Описание можно почитать на сайте https://github.com/BatchedFiles/Qubick/blob/master/README.md"
 Const AllAdminCommands = "справка покажи жуйк . статистика кто з ник зайди выйди сгинь тема скажи ну пароль делай"
 
-Const HelpCommand =         "!справка"
+Const HelpCommand1 =        "!help"
+Const HelpCommand2 =        "!справка"
+Const HelpCommand3 =        "!помощь"
 Const ASCIICommand =        "!покажи"
 Const JuickCommand =        "!жуйк"
 Const ChatSayTextCommand1 = "чат, скажи: "
