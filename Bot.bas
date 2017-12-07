@@ -74,6 +74,12 @@ Sub ServerMessage(ByVal AdvData As Any Ptr, ByVal ServerCode As WString Ptr, ByV
 				If StrStr(MessageText, ":is logged in as") <> 0 Then
 					eData->AdminAuthenticated = True
 				End If
+			Else
+				If lstrlen(eData->SavedChannel) <> 0 Then
+					IncrementUserWords(eData->SavedChannel, @BotNick)
+					eData->objClient.SendIrcMessage(eData->SavedChannel, @"Ты никто и судьбы твоей нет. Ты проиграл свою душу, она не принадлежит тебе уже.")
+					eData->SavedChannel[0] = 0
+				End If
 			End If
 		End If
 		
