@@ -8,9 +8,9 @@
 #include once "WriteLine.bi"
 
 ' Константы команд
-Const AllUserCommands1 = "справка покажи жуйк . статистика кто з"
+Const AllUserCommands1 = "справка покажи жуйк . статистика кто з пенис"
 Const AllUserCommands2 = "Описание можно почитать на сайте https://github.com/BatchedFiles/Qubick/blob/master/README.md"
-Const AllAdminCommands = "справка покажи жуйк . статистика кто з ник зайди выйди сгинь тема скажи ну пароль делай"
+Const AllAdminCommands = "справка покажи жуйк . статистика кто з пенис ник зайди выйди сгинь тема скажи ну пароль делай"
 
 Const HelpCommand1 =        "!help"
 Const HelpCommand2 =        "!справка"
@@ -23,6 +23,7 @@ Const StatsCommand =        "!статистика"
 Const PingCommand =         "."
 Const UserWhoIsCommand =    "!кто"
 Const FenceCommand =        "!з"
+Const PenisCommand =        "!пенис"
 
 Const QuitCommand =         "!сгинь"
 Const NickCommand =         "!ник"
