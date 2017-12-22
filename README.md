@@ -206,13 +206,13 @@
 
 ## Компиляция
 
-Обычное приложение
+Обычное приложение:
 
 ```
 fbc -l IRC bot.bas WriteLine.bas DateTimeToString.bas ProcessAdminCommand.bas AnswerToChat.bas QuestionToChat.bas ProcessUserCommand.bas Settings.bas StringFunctions.bas
 ```
 
-Служба Windows
+Служба Windows:
 
 ```
 fbc -d service=true -l IRC bot.bas WriteLine.bas DateTimeToString.bas ProcessAdminCommand.bas AnswerToChat.bas Service.bas QuestionToChat.bas ProcessUserCommand.bas Settings.bas StringFunctions.bas
