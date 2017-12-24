@@ -209,11 +209,11 @@
 Обычное приложение:
 
 ```
-fbc -l IRC bot.bas WriteLine.bas DateTimeToString.bas ProcessAdminCommand.bas AnswerToChat.bas QuestionToChat.bas ProcessUserCommand.bas Settings.bas StringFunctions.bas
+fbc -l IRC Main.bas Bot.bas MainLoop.bas BotEvents.bas ProcessUserCommand.bas ProcessAdminCommand.bas AnswerToChat.bas QuestionToChat.bas WriteLine.bas DateTimeToString.bas Settings.bas StringFunctions.bas
 ```
 
 Служба Windows:
 
 ```
-fbc -d service=true -l IRC bot.bas WriteLine.bas DateTimeToString.bas ProcessAdminCommand.bas AnswerToChat.bas Service.bas QuestionToChat.bas ProcessUserCommand.bas Settings.bas StringFunctions.bas
+fbc -d service=true -l IRC Service.bas Bot.bas MainLoop.bas BotEvents.bas ProcessUserCommand.bas ProcessAdminCommand.bas AnswerToChat.bas QuestionToChat.bas WriteLine.bas DateTimeToString.bas Settings.bas StringFunctions.bas
 ```
